@@ -53,6 +53,61 @@ declare module "chekr" {
   export type ReporterType = "default" | "json" | "compact";
   export type StepStatus = "pass" | "fail" | "skip";
   export type StepOptions = Record<string, unknown>;
+  export type Severity = "error" | "warning" | "info";
+
+  /** 
+   * A specific occurrence of a violation in a file.
+   * Useful for repo-level checks that find relationships between multiple points.
+   */
+  export interface ViolationOccurrence {
+    file: PathLike;
+    line?: number;
+    column?: number;
+    text?: string;
+    snippet?: string;
+    context?: string;
+  }
+
+  /**
+   * Structured violation output.
+   * Instead of just a string message, rules can provide deep context.
+   */
+  export interface Violation {
+    message: string;
+    checkId?: CheckId;
+    step?: PositiveInt;
+    severity?: Severity;
+    /** The primary file/location where the violation is reported. */
+    file?: PathLike;
+    line?: number;
+    column?: number;
+    text?: string;
+    /** Related locations (e.g., the original interface in a duplication check). */
+    occurrences?: ViolationOccurrence[];
+    /** 
+     * Internal: Flattened locations for reporters. 
+     * Do not use in check functions.
+     */
+    locations?: Array<ViolationOccurrence & { label?: string }>;
+    /** Machine-readable code for filtering/tooling. */
+    code?: string;
+    /** 
+     * Unique identifier for grouping related violations into a single relational report.
+     * If multiple violations share the same logicalId, they will be merged.
+     */
+    logicalId?: string;
+    /** 
+     * Brief explanation of why this violation matters (e.g. "Security Risk", "Maintenance Cost").
+     */
+    impact?: string;
+    /** Suggested fix description or auto-fix metadata. */
+    fix?: string;
+    /** Arbitrary structured data for custom reporters. */
+    data?: Record<string, unknown>;
+  }
+
+  /** Function to report a violation within a check. */
+  export type ReportFn = (violation: Violation | string) => void;
 
   // ── Config ─────────────────────────────────────────────────────────────────
 
@@ -157,5 +212,17 @@ declare module "chekr" {
     options: StepOptions;
     cwd: PathLike;
     stepConfig: StepConfig & ChekrConfig;
+    /** 
+     * Optimization context for repo-level checks. 
+     * Only available in repoFn.
+     */
+    optimize?: boolean;
+    /** Files that haven't changed since last run (if caching is enabled). */
+    unmodifiedFiles?: Set<PathLike>;
+    /** 
+     * Hook to report violations one-by-one. 
+     * If used, the check function can return `void` or `undefined`.
+     */
+    report: ReportFn;
   }
 }

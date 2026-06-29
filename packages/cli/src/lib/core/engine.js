@@ -36,9 +36,11 @@ export async function run(inputConfig = {}) {
   });
 
   const passed = stepResults.every((s) => s.status === "pass");
+  const violations = stepResults.flatMap((s) => s.violations || []);
 
   const result = {
     passed,
+    violations,
     steps: stepResults,
     meta: {
       timestamp: new Date().toISOString(),

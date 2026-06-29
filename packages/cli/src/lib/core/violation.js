@@ -22,6 +22,48 @@ export function normalizeViolation(raw, meta = {}) {
     }
   }
 
+  if (v.severity === undefined) {
+    v.severity = "error";
+  }
+
+  if (Array.isArray(v.occurrences)) {
+    v.occurrences = v.occurrences.map((occ) => {
+      if (typeof occ === "object" && occ !== null) {
+        return { ...occ };
+      }
+      return occ;
+    });
+  }
+
+  // Handle locations mapping for relational output
+  if (!v.locations && (v.file || v.occurrences)) {
+    v.locations = [];
+    if (v.file) {
+      v.locations.push({
+        file: v.file,
+        line: v.line,
+        column: v.column,
+        text: v.text,
+        label: "primary",
+      });
+    }
+    if (Array.isArray(v.occurrences)) {
+      v.occurrences.forEach((occ) => {
+        v.locations.push({
+          file: occ.file,
+          line: occ.line,
+          column: occ.column,
+          text: occ.text,
+          label: occ.context || "involved",
+        });
+      });
+    }
+  }
+
+  if (v.logicalId === undefined && v.code) {
+    v.logicalId = v.code;
+  }
+
   if ((typeof v.file !== "string" || v.file.length === 0) && meta.filePath) {
     v.file = meta.filePath;
   }

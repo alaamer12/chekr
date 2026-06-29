@@ -59,9 +59,21 @@ export function printViolations(violations) {
       console.log(`       ${dim(`Fix: ${v.fix}`)}`);
     }
 
+    if (Array.isArray(v.occurrences)) {
+      for (const occ of v.occurrences) {
+        if (!occ || typeof occ !== "object") continue;
+        const occFile = /** @type {string} */ (occ.file ?? "(unknown file)");
+        const occLine = /** @type {number | undefined} */ (occ.line);
+        console.log(`       ${dim(`· involved: ${fileColor(occFile)} ${lineNum(occLine)}`)}`);
+        if (occ.text) {
+          console.log(`         ${dim(String(occ.text))}`);
+        }
+      }
+    }
+
     for (const [key, value] of Object.entries(v)) {
       if (DISPLAY_SKIP.has(key)) continue;
-      if (["file", "line", "message", "text", "fix"].includes(key)) continue;
+      if (["file", "line", "message", "text", "fix", "severity", "occurrences", "step", "checkId"].includes(key)) continue;
       if (value === undefined || value === null || value === "") continue;
 
       const rendered = typeof value === "object" ? JSON.stringify(value, null, 2) : String(value);

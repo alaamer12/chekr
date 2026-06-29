@@ -444,14 +444,23 @@ export function lcsLength(a, b) {
 	b = downsample(b, LCS_MAX_LEN);
 	const m = a.length,
 		n = b.length;
-	const dp = new Uint16Array((m + 1) * (n + 1));
-	for (let i = 1; i <= m; i++)
-		for (let j = 1; j <= n; j++)
-			dp[i * (n + 1) + j] =
-				a[i - 1] === b[j - 1]
-					? dp[(i - 1) * (n + 1) + (j - 1)] + 1
-					: Math.max(dp[(i - 1) * (n + 1) + j], dp[i * (n + 1) + (j - 1)]);
-	return dp[m * (n + 1) + n];
+	let prevRow = new Uint16Array(n + 1);
+	let currRow = new Uint16Array(n + 1);
+	for (let i = 1; i <= m; i++) {
+		for (let j = 1; j <= n; j++) {
+			if (a[i - 1] === b[j - 1]) {
+				currRow[j] = prevRow[j - 1] + 1;
+			} else {
+				currRow[j] = Math.max(prevRow[j], currRow[j - 1]);
+			}
+		}
+		// Swap rows
+		const temp = prevRow;
+		prevRow = currRow;
+		currRow = temp;
+		currRow.fill(0);
+	}
+	return prevRow[n];
 }
 
 export function lcs_sim(a, b) {
@@ -468,15 +477,26 @@ export function longestCommonSubstring(a, b) {
 		n = b.length;
 	let best = 0,
 		end = 0;
-	const dp = new Uint16Array((m + 1) * (n + 1));
-	for (let i = 1; i <= m; i++)
+	let prevRow = new Uint16Array(n + 1);
+	let currRow = new Uint16Array(n + 1);
+	for (let i = 1; i <= m; i++) {
 		for (let j = 1; j <= n; j++) {
-			dp[i * (n + 1) + j] = a[i - 1] === b[j - 1] ? dp[(i - 1) * (n + 1) + (j - 1)] + 1 : 0;
-			if (dp[i * (n + 1) + j] > best) {
-				best = dp[i * (n + 1) + j];
-				end = i;
+			if (a[i - 1] === b[j - 1]) {
+				currRow[j] = prevRow[j - 1] + 1;
+				if (currRow[j] > best) {
+					best = currRow[j];
+					end = i;
+				}
+			} else {
+				currRow[j] = 0;
 			}
 		}
+		// Swap rows
+		const temp = prevRow;
+		prevRow = currRow;
+		currRow = temp;
+		currRow.fill(0);
+	}
 	return { length: best, substring: a.slice(end - best, end) };
 }
 
@@ -558,7 +578,9 @@ export function subtreeSize(node) {
 
 export function nodeScore(nodeA, nodeB, sigA, sigB, cfg) {
 	const wt = redistributeWeights(cfg.level);
-	const structureScore = Math.max(lcs_sim(sigA, sigB), lcsub_sim(sigA, sigB).score);
+	const lcsVal = lcs_sim(sigA, sigB);
+	const subSim = lcsub_sim(sigA, sigB);
+	const structureScore = Math.max(lcsVal, subSim.score);
 	const ss = cfg.styleSimilarityEnabled ? styleSim(nodeA, nodeB) : { overall: 0, bySource: {}, confident: false };
 	const styleScore = ss.confident ? ss.overall : 0;
 	const aScore = cfg.level >= 2 ? attrSim(nodeA.attrs, nodeB.attrs) : 0;
@@ -570,8 +592,6 @@ export function nodeScore(nodeA, nodeB, sigA, sigB, cfg) {
 		(wt.W_ATTR ?? 0) * aScore +
 		(wt.W_TEXT ?? 0) * tScore;
 
-	const { score: lcsSub, shared } = lcsub_sim(sigA, sigB);
-
 	return {
 		nodeA,
 		nodeB,
@@ -582,9 +602,9 @@ export function nodeScore(nodeA, nodeB, sigA, sigB, cfg) {
 		attrScore: aScore,
 		textScore: tScore,
 		nodeScore: score,
-		lcs: lcs_sim(sigA, sigB),
-		lcsSub,
-		sharedSubstring: shared,
+		lcs: lcsVal,
+		lcsSub: subSim.score,
+		sharedSubstring: subSim.shared,
 	};
 }
 
@@ -612,11 +632,20 @@ export function matchNodes(treeA, treeB, cfg) {
 	const nodesA = flattenTree(normA);
 	const nodesB = flattenTree(normB);
 
+	const sigsA = new Map();
+	const sigsB = new Map();
+	for (const nA of nodesA) {
+		sigsA.set(nA, serializeNode(nA, cfg.level, cfg.matchMode));
+	}
+	for (const nB of nodesB) {
+		sigsB.set(nB, serializeNode(nB, cfg.level, cfg.matchMode));
+	}
+
 	const pairs = [];
 	for (const nA of nodesA) {
+		const sigA = sigsA.get(nA);
 		for (const nB of nodesB) {
-			const sigA = serializeNode(nA, cfg.level, cfg.matchMode);
-			const sigB = serializeNode(nB, cfg.level, cfg.matchMode);
+			const sigB = sigsB.get(nB);
 			pairs.push(nodeScore(nA, nB, sigA, sigB, cfg));
 		}
 	}

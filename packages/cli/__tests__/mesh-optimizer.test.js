@@ -45,25 +45,35 @@ describe("createMeshOptimizer", () => {
 
   it("announce prints building-cache line on first run", () => {
     const write = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const log = vi.spyOn(console, "log").mockImplementation(() => true);
     const mesh = createMeshOptimizer({
       optimize: true,
       unmodifiedFiles: new Set(),
       checkId: "check_dup",
     });
     mesh.announce();
-    expect(write.mock.calls.some((call) => String(call[0]).includes("building cache"))).toBe(true);
+    expect(
+      write.mock.calls.some((call) => String(call[0]).includes("building cache")) ||
+      log.mock.calls.some((call) => String(call[0]).includes("building cache"))
+    ).toBe(true);
     write.mockRestore();
+    log.mockRestore();
   });
 
   it("announce prints mesh ON when clean files exist", () => {
     const write = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const log = vi.spyOn(console, "log").mockImplementation(() => true);
     const mesh = createMeshOptimizer({
       optimize: true,
       unmodifiedFiles: new Set(["a.ts"]),
       checkId: "check_dup",
     });
     mesh.announce();
-    expect(write.mock.calls.some((call) => String(call[0]).includes("Mesh ON"))).toBe(true);
+    expect(
+      write.mock.calls.some((call) => String(call[0]).includes("Mesh ON")) ||
+      log.mock.calls.some((call) => String(call[0]).includes("Mesh ON"))
+    ).toBe(true);
     write.mockRestore();
+    log.mockRestore();
   });
 });

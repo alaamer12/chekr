@@ -190,6 +190,9 @@ export async function runStep({
         cwd,
         stepConfig: resolved,
         checkId: check.id,
+        report: (v) => {
+          violations.push(...normalizeViolations(v, { checkId: check.id, step: stepNum }));
+        },
       };
 
       const onProgress =
@@ -269,6 +272,9 @@ export async function runStep({
     options: resolved.options ?? {},
     cwd,
     stepConfig: resolved,
+    report: (v) => {
+      violations.push(...normalizeViolations(v, { checkId: check.id, step: stepNum }));
+    },
   };
 
   const concurrency = /** @type {number} */ (resolved.concurrency ?? globalConfig.concurrency ?? 4);
@@ -279,9 +285,22 @@ export async function runStep({
     const source = await readFile(absolute, "utf8");
     const fn = check.fn;
 
+    const contextWithFile = {
+      ...context,
+      report: (v) => {
+        violations.push(
+          ...normalizeViolations(v, {
+            filePath,
+            checkId: check.id,
+            step: stepNum,
+          }),
+        );
+      },
+    };
+
     let fileViolations;
     if (fn.length >= 3) {
-      fileViolations = await fn(source, filePath, context);
+      fileViolations = await fn(source, filePath, contextWithFile);
     } else {
       fileViolations = await fn(source, filePath);
     }
@@ -495,6 +514,13 @@ export async function runSteps({ checks, globalConfig }) {
     }
   } finally {
     process.removeListener("SIGINT", sigintHandler);
+    // Clear references to free memory
+    _activeGitContext = null;
+    _activeStepId = null;
+    _activeScopedFiles = [];
+    _activeCachedFiles = {};
+    _activeCheckedFiles = [];
+    _activeViolations = [];
   }
 
   return results;
