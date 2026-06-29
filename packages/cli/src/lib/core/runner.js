@@ -56,6 +56,19 @@ let _cacheEnabled = false;
 /** @type {string} */
 let _activeCacheDir = "";
 
+/** @type {boolean} */
+let _cancelled = false;
+
+/**
+ * Returns true if the user has pressed Ctrl+C and the run is being aborted.
+ * Repo-level checks (e.g. check_code_duplication) should poll this inside
+ * their batch loops and return early when it is true.
+ * @returns {boolean}
+ */
+export function isCancelled() {
+  return _cancelled;
+}
+
 /**
  * @param {string[]} scopedFiles
  * @param {Array<{ file: string, source: string }>} checkedFiles
@@ -233,6 +246,21 @@ export async function runStep({
 
       clearProgress();
       setProgressContext(check.id, false);
+
+      // Populate _activeCheckedFiles so repo-level checks can be cached properly
+      if (useCache && _activeCheckedFiles.length === 0 && files.length > 0) {
+        for (const filePath of files) {
+          if (!cachedFileHashes[filePath]) {
+            try {
+              const absolute = toAbsolute(filePath, cwd);
+              const source = await readFile(absolute, "utf8");
+              _activeCheckedFiles.push({ file: filePath, source });
+            } catch {
+              // ignore unreadable files
+            }
+          }
+        }
+      }
     }
   }
 
@@ -405,16 +433,26 @@ export async function runSteps({ checks, globalConfig }) {
   }
 
   const sigintHandler = () => {
+    _cancelled = true;
     clearProgress();
     if (_cacheEnabled && _activeGitContext && _activeStepId) {
-      console.log(warn(`\nInterrupted! Saving partial cache for ${_activeStepId}...`));
-      const filesForCache = buildFilesForCache(
-        _activeScopedFiles,
-        _activeCheckedFiles,
-        _activeCachedFiles,
-      );
-      const cachePath = stepCachePath(_activeCacheDir, _activeGitContext, _activeStepId);
-      saveStepCacheSync(cachePath, _activeGitContext, filesForCache, _activeViolations);
+      // Write to stderr — it's unbuffered and flushes immediately even after
+      // the parent shell (bun) has already restored the terminal prompt.
+      process.stderr.write(warn(`\nInterrupted! Saving partial cache for ${_activeStepId}...\n`));
+      try {
+        const filesForCache = buildFilesForCache(
+          _activeScopedFiles,
+          _activeCheckedFiles,
+          _activeCachedFiles,
+        );
+        const cachePath = stepCachePath(_activeCacheDir, _activeGitContext, _activeStepId);
+        // Save only file hashes — NOT violations. The violations array for repo-level
+        // checks can be enormous (tens of thousands of entries) and serializing it
+        // synchronously inside a signal handler blocks the thread for seconds.
+        saveStepCacheSync(cachePath, _activeGitContext, filesForCache, []);
+      } catch {
+        // ignore errors during interrupt cache save
+      }
     }
     process.exit(1);
   };

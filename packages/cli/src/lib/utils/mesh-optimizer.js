@@ -69,14 +69,14 @@ export function createMeshOptimizer(context) {
       if (!enabled) return;
 
       if (!isActive) {
-        process.stdout.write(
-          "  \u26a1 Mesh: building cache (first run) \u2014 will optimize on next run\n",
+        console.log(
+          "  \u26a1 Mesh: building cache (first run) \u2014 will optimize on next run"
         );
         return;
       }
 
-      process.stdout.write(
-        `  \u26a1 Mesh ON: ${unmodified.size.toLocaleString()} clean files \u2192 skipping U\u00d7U pairs\n`,
+      console.log(
+        `  \u26a1 Mesh ON: ${unmodified.size.toLocaleString()} clean files \u2192 skipping U\u00d7U pairs`
       );
     },
 

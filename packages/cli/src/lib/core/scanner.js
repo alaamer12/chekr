@@ -5,6 +5,8 @@ import { getChangedPaths, getStagedPaths, isRepo } from "./git/git-service.js";
 import { applyGitignoreFilter, createGitignoreFilter } from "./git/gitignore-filter.js";
 import { deriveExtensions, matchesAny } from "./glob-match.js";
 
+const scanCache = new Map();
+
 /**
  * Scan files for a resolved step config.
  * @param {Record<string, unknown>} stepConfig
@@ -18,10 +20,26 @@ export async function scanFiles(stepConfig, globalConfig) {
 
   const include = /** @type {string[] | undefined} */ (stepConfig.include);
   const exclude = /** @type {string[] | undefined} */ (stepConfig.exclude);
-  const extensions = deriveExtensions(
+  const rawExtensions = /** @type {string[] | undefined} */ (stepConfig.extensions);
+  const scope = /** @type {string[] | undefined} */ (stepConfig.scope);
+  const gitignorePath = stepConfig.gitignore ?? globalConfig.gitignore;
+
+  const cacheKey = JSON.stringify({
+    cwd,
+    scanPath,
+    scanMode,
     include,
-    /** @type {string[] | undefined} */ (stepConfig.extensions),
-  );
+    exclude,
+    extensions: rawExtensions,
+    scope,
+    gitignorePath,
+  });
+
+  if (scanCache.has(cacheKey)) {
+    return scanCache.get(cacheKey);
+  }
+
+  const extensions = deriveExtensions(include, rawExtensions);
 
   const absoluteScan = toAbsolute(scanPath, cwd);
   let candidates = walkFiles(absoluteScan, extensions);
@@ -42,7 +60,6 @@ export async function scanFiles(stepConfig, globalConfig) {
     candidates = candidates.filter((p) => !matchesAny(p, exclude));
   }
 
-  const scope = /** @type {string[] | undefined} */ (stepConfig.scope);
   if (scope?.length) {
     candidates = candidates.filter((p) =>
       scope.some((prefix) => {
@@ -55,7 +72,6 @@ export async function scanFiles(stepConfig, globalConfig) {
     );
   }
 
-  const gitignorePath = stepConfig.gitignore ?? globalConfig.gitignore;
   if (gitignorePath) {
     const isIgnored = createGitignoreFilter(/** @type {string} */ (gitignorePath), cwd);
     candidates = applyGitignoreFilter(candidates, isIgnored);
@@ -71,5 +87,14 @@ export async function scanFiles(stepConfig, globalConfig) {
     }
   }
 
-  return candidates.sort();
+  const result = candidates.sort();
+  scanCache.set(cacheKey, result);
+  return result;
+}
+
+/**
+ * Clear the in-memory scan cache (useful for testing).
+ */
+export function clearScanCache() {
+  scanCache.clear();
 }

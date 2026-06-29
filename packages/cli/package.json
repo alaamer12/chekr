@@ -37,7 +37,8 @@
     "./engine": "./src/engine.js",
     "./utils": "./src/lib/utils/index.js",
     "./mesh": "./src/lib/utils/mesh-optimizer.js",
-    "./helpers": "./src/lib/helpers/index.js"
+    "./helpers": "./src/lib/helpers/index.js",
+    "./runner": "./src/lib/core/runner.js"
   },
   "files": [
     "src",
