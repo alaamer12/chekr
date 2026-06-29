@@ -48,7 +48,7 @@
     "test:all": "bun run test:helpers && bun run test:utils && bun run test:core && bun run test:cli && bun run test:types",
     "typecheck": "tsc -p types/tsconfig.json",
     "typecheck:types": "tsc -p types/tsconfig.json",
-    "pack:cli": "node scripts/prepare-cli-publish.mjs && node scripts/verify-cli-pack.mjs",
+    "pack:cli": "node scripts/sync-cli-vendor.mjs && node scripts/verify-cli-pack.mjs",
     "smoke": "cd examples/minimal && node ../../packages/cli/src/index.js run",
     "verify": "bun run lint && bun run typecheck && bun run test:all && bun run smoke"
   }

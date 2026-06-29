@@ -1,6 +1,6 @@
 {
   "name": "@chekr/cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Command-line interface for chekr — run project rules from the terminal",
   "license": "MIT",
   "type": "module",
@@ -29,7 +29,7 @@
     "access": "public"
   },
   "bin": {
-    "chekr": "./src/index.js"
+    "chekr": "src/index.js"
   },
   "main": "./src/index.js",
   "exports": {
@@ -38,22 +38,19 @@
   },
   "files": [
     "src",
-    "README.md"
+    "README.md",
+    "vendor"
   ],
   "scripts": {
-    "prepublishOnly": "node ../../scripts/prepare-cli-publish.mjs && node ../../scripts/verify-cli-pack.mjs",
+    "prepare": "node ../../scripts/sync-cli-vendor.mjs",
+    "prepublishOnly": "node ../../scripts/sync-cli-vendor.mjs && node ../../scripts/verify-cli-pack.mjs",
     "test": "vitest run"
   },
   "dependencies": {
-    "@chekr/core": "0.1.0",
-    "@chekr/helpers": "0.1.0",
-    "@chekr/utils": "0.1.0",
+    "@chekr/core": "file:vendor/@chekr/core",
+    "@chekr/helpers": "file:vendor/@chekr/helpers",
+    "@chekr/utils": "file:vendor/@chekr/utils",
     "ignore": "^7.0.3",
     "simple-git": "^3.27.0"
-  },
-  "bundledDependencies": [
-    "@chekr/core",
-    "@chekr/helpers",
-    "@chekr/utils"
-  ]
+  }
 }
