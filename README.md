@@ -89,6 +89,26 @@ export default {
 
 Install types for editor support: `npm install -D @chekr/types`
 
+### Flexible & Professional Reporting
+
+chekr provides a relational reporting system that allows rules to report complex, multi-file violations with deep context.
+
+```js
+export function myCheck(source, filePath, context) {
+  // Use the report hook for high flexibility
+  context.report({
+    message: "Architectural violation",
+    impact: "This increases bundle size and coupling",
+    severity: "error",
+    logicalId: "arch:boundary", // Group multiple violations together
+    data: { customField: "metadata" },
+    occurrences: [
+      { file: "other_file.ts", context: "Related code found here" }
+    ]
+  });
+}
+```
+
 ## CLI
 
 | Command | Description |
