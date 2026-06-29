@@ -1,7 +1,15 @@
 const COMMANDS = new Set(["run", "fix", "list", "validate", "init"]);
 
 /** Flags that take no value (--verbose, --help, etc.). */
-const BOOLEAN_FLAGS = new Set(["help", "verbose", "changed", "staged", "clear-cache", "version"]);
+const BOOLEAN_FLAGS = new Set([
+  "help",
+  "verbose",
+  "changed",
+  "staged",
+  "clear-cache",
+  "version",
+  "pass",
+]);
 
 /** Flags that use --no-* form only. */
 const NO_PREFIX_FLAGS = new Set(["no-bail", "no-cache", "no-parallel", "no-gitignore"]);

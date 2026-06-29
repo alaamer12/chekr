@@ -2,9 +2,19 @@ import readline from "node:readline";
 
 let _progressActive = false;
 let _lastRenderTime = 0;
+let _activeStepName = "";
+let _meshActive = false;
 
 /**
- * Render or clear a throttled progress line (verbose mode only).
+ * @param {string} stepName
+ * @param {boolean} [meshActive]
+ */
+export function setProgressContext(stepName, meshActive = false) {
+  _activeStepName = stepName;
+  _meshActive = meshActive;
+}
+
+/**
  * @param {number} done
  * @param {number} total
  * @param {string} [stepName]
@@ -16,14 +26,15 @@ export function renderProgress(done, total, stepName = "") {
 
   _progressActive = true;
   const percent = total === 0 ? 100 : Math.round((done / total) * 100);
-  const filled = Math.round((done / total) * 20);
+  const filled = total === 0 ? 0 : Math.round((done / total) * 20);
   const bar = "\u2588".repeat(filled) + "\u2591".repeat(20 - filled);
 
-  let shortName = stepName;
+  let shortName = stepName || _activeStepName;
   if (shortName.length > 12) {
-    shortName = shortName.replace(/^check_/, "").substring(0, 12);
+    shortName = shortName.replace(/^check[-_]/, "").substring(0, 12);
   }
-  const stepPrefix = shortName ? `[${shortName}] ` : "";
+  const meshTag = _meshActive ? "\u26a1" : "";
+  const stepPrefix = shortName ? `[${shortName}${meshTag}] ` : "";
 
   let line = `  \u21b3 ${stepPrefix}${bar} ${String(percent).padStart(3)}% | ${done}/${total}`;
   if (line.length > 75) {

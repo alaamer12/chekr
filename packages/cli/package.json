@@ -1,6 +1,6 @@
 {
   "name": "@chekr/cli",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "description": "Command-line interface for chekr — run project rules from the terminal",
   "license": "MIT",
   "type": "module",
@@ -36,6 +36,7 @@
     ".": "./src/index.js",
     "./engine": "./src/engine.js",
     "./utils": "./src/lib/utils/index.js",
+    "./mesh": "./src/lib/utils/mesh-optimizer.js",
     "./helpers": "./src/lib/helpers/index.js"
   },
   "files": [

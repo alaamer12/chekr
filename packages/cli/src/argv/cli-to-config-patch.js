@@ -19,7 +19,7 @@ export function cliToConfigPatch(flags, positionals) {
     patch.configPath = flags.config;
   }
 
-  if (flags["no-bail"] === true) {
+  if (flags["no-bail"] === true || flags.pass === true) {
     patch.bail = false;
   }
 

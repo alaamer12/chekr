@@ -51,7 +51,7 @@ $RECYCLE.BIN/
 # Dependencies
 node_modules/
 jspm_packages/
-
+.tmp-*/
 # CLI pack artifacts
 packages/cli/*.tgz
 

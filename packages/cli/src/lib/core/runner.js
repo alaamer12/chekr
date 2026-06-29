@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { chunk, resolveStepConfig, toAbsolute } from "../helpers/index.js";
-import { dim, warn } from "../utils/index.js";
+import { dim, fail, warn } from "../utils/index.js";
+import { isMeshResult } from "../utils/mesh-optimizer.js";
 import {
   contentHash,
   formatIncrementalCacheBanner,
@@ -16,8 +17,10 @@ import {
   stepCachePath,
 } from "./git/diff-cache.js";
 import { diffPaths, getGitContext, isGitAvailable } from "./git/git-service.js";
-import { clearProgress, renderProgress } from "./progress.js";
+import { clearProgress, renderProgress, setProgressContext } from "./progress.js";
+import { printStepResult, printViolations } from "./reporter/default.js";
 import { scanFiles } from "./scanner.js";
+import { normalizeViolation, normalizeViolations } from "./violation.js";
 
 /**
  * @typedef {object} StepResult
@@ -25,8 +28,8 @@ import { scanFiles } from "./scanner.js";
  * @property {number} step
  * @property {string} name
  * @property {'pass' | 'fail' | 'skip'} status
- * @property {Array<{ file: string, line?: number, message: string, text?: string, fix?: string, _files?: string[] }>} violations
- * @property {{ checked: number, skipped: number, fullyCached?: boolean }} cacheInfo
+ * @property {Array<Record<string, unknown>>} violations
+ * @property {{ checked: number, skipped: number, fullyCached?: boolean, optimize?: boolean, meshSkippedPairs?: number }} cacheInfo
  */
 
 /** @type {import('./git/git-service.js').GitContext | null} */
@@ -105,9 +108,11 @@ export async function runStep({
   const stepOverrides = check.config ?? { id: check.id };
   const resolved = resolveStepConfig(globalConfig, stepOverrides, cliStepPatch);
   const cwd = /** @type {string} */ (globalConfig.cwd ?? process.cwd());
-  const verbose = globalConfig.verbose === true;
+  const optimize = resolved.optimize === true;
+  const stepNum = check.step ?? stepNumber;
 
   const files = await scanFiles(resolved, globalConfig);
+  /** @type {Record<string, unknown>[]} */
   const violations = [];
   let toCheck = files;
   let skipped = [];
@@ -142,18 +147,21 @@ export async function runStep({
       toCheck = partition.toCheck;
       skipped = partition.skipped;
 
+      const restoredViolations = cachedViolations
+        .map((v) => normalizeViolation(v, { checkId: check.id, step: stepNum }))
+        .filter((v) => v !== null);
       const skippedSet = new Set(skipped);
-      const restoredViolations = cachedViolations.filter((v) => {
-        const vFiles = /** @type {{ _files?: string[], file?: string }} */ (v)._files ?? [
-          /** @type {{ file?: string }} */ (v).file,
-        ];
-        return vFiles.every((f) => skippedSet.has(f));
-      });
-      violations.push(...restoredViolations);
+      violations.push(
+        ...restoredViolations.filter((v) => {
+          const vFiles = /** @type {string[]} */ (v._files ?? [/** @type {string} */ (v.file)]);
+          return vFiles.every((f) => skippedSet.has(f));
+        }),
+      );
     }
   }
 
   let runRepo = false;
+  let meshSkippedPairs = 0;
   const repoFn = check.repoFn;
   const checkProject = check.checkProject;
 
@@ -163,15 +171,19 @@ export async function runStep({
 
     if (runRepo) {
       const context = {
+        optimize,
         unmodifiedFiles: new Set(skipped),
         cachedViolations,
         cwd,
         stepConfig: resolved,
+        checkId: check.id,
       };
 
       const onProgress =
-        verbose && typeof repoFn === "function"
-          ? (done, total) => renderProgress(done, total, check.id)
+        typeof repoFn === "function"
+          ? (done, total) => {
+              renderProgress(done, total);
+            }
           : undefined;
 
       if (typeof repoFn === "function") {
@@ -179,10 +191,24 @@ export async function runStep({
         const rawResult = repoFn(scanPath, files, onProgress, context);
         const result = rawResult instanceof Promise ? await rawResult : rawResult;
 
+        if (optimize && !isMeshResult(result)) {
+          console.log(
+            warn(
+              `\u26a1 optimize: true on ${check.id} but createMeshOptimizer() was not used — pair skipping disabled`,
+            ),
+          );
+        }
+
         if (result && typeof result === "object" && "violations" in result) {
-          violations.push(.../** @type {{ violations: unknown[] }} */ (result).violations);
-        } else if (Array.isArray(result)) {
-          violations.push(...result);
+          const payload = /** @type {{ violations: unknown, meshSkippedPairs?: number }} */ (
+            result
+          );
+          violations.push(
+            ...normalizeViolations(payload.violations, { checkId: check.id, step: stepNum }),
+          );
+          meshSkippedPairs = payload.meshSkippedPairs ?? 0;
+        } else {
+          violations.push(...normalizeViolations(result, { checkId: check.id, step: stepNum }));
         }
       } else if (typeof checkProject === "function") {
         const fileMap = {};
@@ -194,21 +220,19 @@ export async function runStep({
           const source = await readFile(absolute, "utf8");
           fileMap[filePath] = source;
           readCount++;
-          if (verbose) {
-            renderProgress(readCount, sourcesToRead.length, check.id);
-          }
+          setProgressContext(check.id, false);
+          renderProgress(readCount, sourcesToRead.length);
         }
 
         clearProgress();
 
         const rawResult = checkProject(fileMap, context);
         const result = rawResult instanceof Promise ? await rawResult : rawResult;
-        if (Array.isArray(result)) {
-          violations.push(...result);
-        }
+        violations.push(...normalizeViolations(result, { checkId: check.id, step: stepNum }));
       }
 
       clearProgress();
+      setProgressContext(check.id, false);
     }
   }
 
@@ -238,9 +262,13 @@ export async function runStep({
     _activeCheckedFiles.push(entry);
 
     if (Array.isArray(fileViolations)) {
-      for (const v of fileViolations) {
-        violations.push(v);
-      }
+      violations.push(
+        ...normalizeViolations(fileViolations, {
+          filePath,
+          checkId: check.id,
+          step: stepNum,
+        }),
+      );
     }
   };
 
@@ -249,9 +277,8 @@ export async function runStep({
 
     const trackProgress = () => {
       checkedCount++;
-      if (verbose) {
-        renderProgress(checkedCount, toCheck.length, check.id);
-      }
+      setProgressContext(check.id, false);
+      renderProgress(checkedCount, toCheck.length);
     };
 
     if (parallel && concurrency > 1) {
@@ -297,7 +324,7 @@ export async function runStep({
 
   return {
     id: check.id,
-    step: stepNumber,
+    step: stepNum,
     name: check.id,
     status: violations.length > 0 ? "fail" : "pass",
     violations,
@@ -305,6 +332,8 @@ export async function runStep({
       checked: toCheck.length,
       skipped: skipped.length,
       fullyCached,
+      optimize,
+      meshSkippedPairs,
     },
   };
 }
@@ -320,6 +349,8 @@ export async function runSteps({ checks, globalConfig }) {
   const cwd = /** @type {string} */ (globalConfig.cwd ?? process.cwd());
   const cacheDirRel = /** @type {string} */ (globalConfig.cacheDir ?? ".chekr-cache");
   const verbose = globalConfig.verbose === true;
+  const quiet =
+    globalConfig.reportFile != null && String(globalConfig.reportFile).endsWith(".json");
 
   /** @type {import('./git/git-service.js').GitContext | null} */
   let gitContext = null;
@@ -364,7 +395,7 @@ export async function runSteps({ checks, globalConfig }) {
           }
         }
 
-        if (verbose) {
+        if (!quiet || verbose) {
           console.log(
             dim(formatIncrementalCacheBanner(gitContext, branchMeta, modifiedPaths.size)),
           );
@@ -397,7 +428,6 @@ export async function runSteps({ checks, globalConfig }) {
     for (const check of checks) {
       const stepOverrides = check.config ?? { id: check.id };
       const resolved = resolveStepConfig(globalConfig, stepOverrides);
-      const bail = resolved.bail ?? globalConfig.bail;
 
       const result = await runStep({
         check,
@@ -407,9 +437,19 @@ export async function runSteps({ checks, globalConfig }) {
         stepNumber: check.step ?? stepNumber,
       });
 
+      printStepResult(result.step, result.name, result.violations, result.cacheInfo);
       results.push(result);
 
+      const bail = resolved.bail ?? globalConfig.bail;
       if (result.status === "fail" && bail !== false) {
+        if (!quiet) {
+          printViolations(result.violations);
+          console.log(
+            fail(
+              `\n${result.violations.length} violations found. Fix Step ${result.step} before continuing.`,
+            ),
+          );
+        }
         break;
       }
 

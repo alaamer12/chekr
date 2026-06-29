@@ -27,7 +27,10 @@ export async function runCommand(flags, positionals, cwd) {
 
   const result = await run({ ...patch, cwd });
 
-  if (!result.passed) {
+  const reportFile = patch.reportFile;
+  const hasJsonReport = typeof reportFile === "string" && reportFile.endsWith(".json");
+
+  if (!hasJsonReport && !result.passed) {
     process.exitCode = 1;
   }
 

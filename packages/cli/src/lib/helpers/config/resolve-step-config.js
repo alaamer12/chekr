@@ -32,6 +32,7 @@ export function resolveStepConfig(global, step, cliStepPatch = {}) {
     bail: stepPart.bail !== undefined ? stepPart.bail : global.bail,
     concurrency: stepPart.concurrency !== undefined ? stepPart.concurrency : global.concurrency,
     options: stepPart.options,
+    optimize: stepPart.optimize,
   });
 
   return mergeConfig(resolved, pickDefined(cliStepPatch));

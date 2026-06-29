@@ -47,10 +47,12 @@ export async function run(inputConfig = {}) {
       cwd,
       checkCount: ordered.length,
       scanMode: globalConfig.scanMode ?? "full",
+      bail: globalConfig.bail !== false,
+      mode: globalConfig.bail === false ? "audit" : "normal",
     },
   };
 
-  if (globalConfig.reporter) {
+  if (globalConfig.reporter !== false) {
     report(result, globalConfig);
   }
 
