@@ -1,29 +1,38 @@
 {
   "name": "@checkr/helpers",
   "version": "0.1.0",
-  "description": "Shared helpers for checkr config parsing, path utilities, and naming conventions",
+  "description": "Config parsing, path utilities, and naming helpers for checkr",
   "license": "MIT",
   "type": "module",
+  "author": "checkr contributors",
   "engines": {
     "node": ">=18"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alaamer12/chekr.git",
+    "url": "git+https://github.com/alaamer12/chekr.git",
     "directory": "packages/helpers"
   },
+  "bugs": {
+    "url": "https://github.com/alaamer12/chekr/issues"
+  },
+  "homepage": "https://github.com/alaamer12/chekr/tree/main/packages/helpers#readme",
   "keywords": [
     "checkr",
-    "helpers",
     "config",
+    "helpers",
     "utilities"
   ],
-  "main": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js"
   },
   "files": [
-    "src"
+    "src",
+    "README.md"
   ],
   "scripts": {
     "test": "vitest run"

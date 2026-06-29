@@ -1,57 +1,29 @@
 # @checkr/types
 
-TypeScript definitions for `checkr.config.js` and programmatic `run()` options.
+TypeScript definitions for `checkr.config.js` and rule contracts.
 
-## Setup
+## Install
 
 ```bash
-bun add -d @checkr/types
+npm install -D @checkr/types
 ```
-
-```jsonc
-// tsconfig.json
-{
-  "compilerOptions": {
-    "types": ["checkr"]
-  }
-}
-```
-
-Or copy `checkr.config.d.ts` into your project root.
 
 ## Usage
 
 ```js
-// checkr.config.js
 /** @type {import('checkr').CheckrConfig} */
 export default {
   checksDir: "./.checkr/checks",
   gitignore: ".gitignore",
-  reporter: "default",
-  steps: [
-    {
-      id: "check_raw_colors",
-      step: 1,
-      include: ["src/**/*.{ts,tsx}"],
-    },
-  ],
 };
 ```
 
-## Semantic types
+## Exports
 
-| Type | Meaning |
-|------|---------|
-| `PathLike` | Directory or file path |
-| `GlobPattern` | Include/exclude glob |
-| `GitignorePath` | Path to ignore file or `null` |
-| `CheckId` | `check_${string}` rule id |
-| `IgnoreMarker` | `@checkr-ignore` style marker |
-| `ScanMode` | `full` \| `changed` \| `staged` |
+| Import | Content |
+|--------|---------|
+| `checkr` | `CheckrConfig`, `StepConfig`, `PathLike`, `CheckId`, … |
+| `@checkr/types/primitives` | Primitive type aliases |
+| `@checkr/types/schema` | Zod `checkrConfigSchema` (runtime validation) |
 
-Runtime validation:
-
-- **Production:** `@checkr/helpers` → `validateConfig()` (plain JS, no extra deps)
-- **Dev / CI:** `@checkr/types` → `checkrConfigSchema` (Zod) in `schema.zod.js`
-
-Optional: add [typia](https://typia.io) in a TypeScript-only consumer project for compile-time validators generated from these interfaces.
+See [Configuration guide](https://github.com/alaamer12/chekr/blob/main/docs/CONFIG.md).

@@ -1,10 +1,33 @@
 {
   "name": "@checkr/types",
   "version": "0.1.0",
-  "description": "TypeScript definitions for checkr configuration and rule contracts",
+  "description": "TypeScript definitions and Zod schema for checkr configuration",
   "license": "MIT",
   "type": "module",
-  "types": "checkr.config.d.ts",
+  "author": "checkr contributors",
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alaamer12/chekr.git",
+    "directory": "types"
+  },
+  "bugs": {
+    "url": "https://github.com/alaamer12/chekr/issues"
+  },
+  "homepage": "https://github.com/alaamer12/chekr/tree/main/types#readme",
+  "keywords": [
+    "checkr",
+    "typescript",
+    "types",
+    "config",
+    "zod"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "types": "./checkr.config.d.ts",
   "exports": {
     ".": "./checkr.config.d.ts",
     "./primitives": "./primitives.d.ts",
@@ -13,16 +36,13 @@
   "dependencies": {
     "zod": "^3.24.0"
   },
-  "devDependencies": {
-    "vitest": "3.2.4"
-  },
-  "scripts": {
-    "test": "bun test"
-  },
   "files": [
     "checkr.config.d.ts",
     "primitives.d.ts",
     "schema.zod.js",
     "README.md"
-  ]
+  ],
+  "scripts": {
+    "test": "bun test"
+  }
 }

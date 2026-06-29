@@ -2,10 +2,35 @@
   "name": "checkr",
   "version": "0.1.0",
   "private": true,
+  "description": "AI output alignment checker — enforce design system contracts with plain JS rules",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alaamer12/chekr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/alaamer12/chekr/issues"
+  },
+  "homepage": "https://github.com/alaamer12/chekr#readme",
+  "keywords": [
+    "checkr",
+    "ai",
+    "design-system",
+    "linter",
+    "rules",
+    "design-tokens",
+    "contract"
+  ],
   "bin": {
     "checkr": "./packages/cli/src/index.js"
   },
-  "workspaces": ["packages/*", "types"],
+  "workspaces": [
+    "packages/*",
+    "types"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",
     "typescript": "^5.8.3",
@@ -14,7 +39,7 @@
   "scripts": {
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
-    "test": "vitest run --config packages/helpers/vitest.config.js",
+    "test": "bun run test:all",
     "test:helpers": "vitest run --config packages/helpers/vitest.config.js",
     "test:utils": "vitest run --config packages/utils/vitest.config.js",
     "test:core": "vitest run --config packages/core/vitest.config.js",

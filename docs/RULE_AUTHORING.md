@@ -2,6 +2,10 @@
 
 Writing checks and fixes for checkr.
 
+**Types:** `npm install -D @checkr/types` then `/** @type {import('checkr').CheckrConfig} */` in `checkr.config.js`.
+
+**Utilities:** `import { walkFiles, buildIgnoredLines } from '@checkr/utils'`
+
 ---
 
 ## Anatomy of a check file

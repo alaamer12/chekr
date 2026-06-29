@@ -39,7 +39,7 @@ Use when user says `up-agents 4 + 1` on this repo without a custom split.
 | **W1** | 0s | `package.json` (root), `types/`, `packages/helpers/**`, empty shells for utils/core/cli | Full `@checkr/helpers`, `checkr.config.d.ts`, workspace scaffold |
 | **W2** | 60s | `packages/utils/**` | Port toolkit utils, no chalk, marker param on ignore handler |
 | **W3** | 180s | `packages/core/**` | Engine, config, git module, reporter, `run()` API |
-| **W4** | 480s | `packages/cli/**`, `examples/**`, `Docs/CONFIG.md`, `Docs/CLI.md` | CLI commands, migrate/delete `toolkit/` |
+| **W4** | 480s | `packages/cli/**`, `examples/**`, `docs/CONFIG.md`, `docs/CLI.md` | CLI commands, migrate/delete `toolkit/` |
 | **Reviewer** | 800s | cross-package fixes only | plan.md §12 DoD, bun test all, E2E `examples/minimal` |
 
 ### Forbidden cross-edits

@@ -1,29 +1,39 @@
 {
   "name": "@checkr/core",
   "version": "0.1.0",
-  "description": "checkr engine: file scanning, rule loading, and violation reporting",
+  "description": "checkr engine — discover rules, scan files, report violations",
   "license": "MIT",
   "type": "module",
+  "author": "checkr contributors",
   "engines": {
     "node": ">=18"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alaamer12/chekr.git",
+    "url": "git+https://github.com/alaamer12/chekr.git",
     "directory": "packages/core"
   },
+  "bugs": {
+    "url": "https://github.com/alaamer12/chekr/issues"
+  },
+  "homepage": "https://github.com/alaamer12/chekr/tree/main/packages/core#readme",
   "keywords": [
     "checkr",
     "engine",
-    "linter",
-    "rules"
+    "rules",
+    "design-system",
+    "linter"
   ],
-  "main": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js"
   },
   "files": [
-    "src"
+    "src",
+    "README.md"
   ],
   "dependencies": {
     "@checkr/helpers": "^0.1.0",

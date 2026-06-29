@@ -1,6 +1,6 @@
 # checkr — Configuration Reference (v2)
 
-Config is **`checkr.config.js` only** (no JSON). Types ship in `types/checkr.config.d.ts`.
+Config is **`checkr.config.js` only** (no JSON). Types: `npm install -D @checkr/types` or copy `types/checkr.config.d.ts`.
 
 ---
 

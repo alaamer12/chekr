@@ -1,32 +1,43 @@
 {
   "name": "@checkr/cli",
   "version": "0.1.0",
-  "description": "CLI for running checkr project rules",
+  "description": "Command-line interface for checkr — run project rules from the terminal",
   "license": "MIT",
   "type": "module",
+  "author": "checkr contributors",
   "engines": {
     "node": ">=18"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/alaamer12/chekr.git",
+    "url": "git+https://github.com/alaamer12/chekr.git",
     "directory": "packages/cli"
   },
+  "bugs": {
+    "url": "https://github.com/alaamer12/chekr/issues"
+  },
+  "homepage": "https://github.com/alaamer12/chekr/tree/main/packages/cli#readme",
   "keywords": [
     "checkr",
     "cli",
+    "design-system",
     "rules",
-    "design-system"
+    "ai",
+    "linter"
   ],
-  "main": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "checkr": "./src/index.js"
   },
+  "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js"
   },
   "files": [
-    "src"
+    "src",
+    "README.md"
   ],
   "dependencies": {
     "@checkr/core": "^0.1.0",

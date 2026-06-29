@@ -1,88 +1,57 @@
-# checkr — Contributing Guide
+# Contributing to checkr
 
----
-
-## Repository structure
+## Repository layout
 
 ```
 checkr/
   packages/
-    core/          ← @checkr/core — engine
-    cli/           ← @checkr/cli — CLI wrapper
-    utils/         ← @checkr/utils — rule author utilities
-  docs/            ← documentation source
-  examples/        ← example rule sets
+    helpers/     @checkr/helpers — config parse, naming, path utils
+    utils/       @checkr/utils   — file walker, ignore blocks, colors
+    core/        @checkr/core    — engine
+    cli/         @checkr/cli     — checkr binary
+  types/         @checkr/types   — TypeScript definitions + Zod schema
+  docs/          User + internal documentation
+  examples/      minimal + symphony-rules samples
 ```
 
----
-
-## Development setup
+## Setup
 
 ```bash
-git clone https://github.com/your-org/checkr
-cd checkr
+git clone https://github.com/alaamer12/chekr.git
+cd chekr
 bun install
-bun build
 ```
 
----
+## Scripts
 
-## Running tests
+| Command | Description |
+|---------|-------------|
+| `bun run verify` | lint + typecheck + test:all + smoke |
+| `bun run lint` | Biome check on `packages/**` |
+| `bun run lint:fix` | Auto-fix lint issues |
+| `bun run test:all` | All package tests |
+| `bun run smoke` | E2E in `examples/minimal` |
 
-```bash
-bun test              # all packages
-bun test packages/core
-bun test packages/cli
-bun test packages/utils
-```
+## Rule contract (stable API)
 
----
+Do not break without a major version bump:
 
-## Rule contract stability
+- Check: `(source: string, filePath: string, context?) => Violation[]`
+- Fix: `(source, filePath, violations, args?) => string`
+- Filenames: `check_*.js`, `fix_*.js`
+- Export names derived from filename (`check_raw_colors` → `checkRawColors`)
 
-The rule contract is the most important API surface. Changes to it are breaking changes.
+## Adding a feature
 
-**Stable (do not change without major version):**
-- Check function signature: `(source: string, filePath: string) => Violation[]`
-- Fix function signature: `(source: string, filePath: string, violations: Violation[], args?: string[]) => string`
-- `Violation` required fields: `file`, `line`, `text`, `message`
-- File naming convention: `check_*.js`, `fix_*.js`
-- Export naming convention: function name starts with `check` or `fix`
+1. Read [internal/REQUIREMENTS.md](internal/REQUIREMENTS.md) and [internal/ARCHITECTURE.md](internal/ARCHITECTURE.md)
+2. Implement with tests in the owning package
+3. Update user docs in `docs/CONFIG.md` or `docs/CLI.md` if user-facing
+4. Run `bun run verify`
 
-**Unstable (may change in minor versions):**
-- Reporter output format
-- Cache format
-- Internal engine APIs
+## Publishing
 
----
+See [PUBLISHING.md](PUBLISHING.md).
 
-## Adding a new utility to `@checkr/utils`
+## Agent skills (optional)
 
-1. Add the function to `packages/utils/src/`
-2. Export it from `packages/utils/src/index.js`
-3. Add tests in `packages/utils/tests/`
-4. Document it in `RULE_AUTHORING.md`
-
-Utilities must have zero dependencies and work in both Node.js and Bun.
-
----
-
-## Commit convention
-
-```
-feat: add --staged flag to checkr run
-fix: handle Windows paths in file walker
-docs: update CLI reference for v1.1
-perf: parallelize file reading in scanner
-test: add cache invalidation tests
-chore: bump dependencies
-```
-
----
-
-## Release process
-
-1. Update version in all `package.json` files
-2. Update `ROADMAP.md` — mark completed items
-3. Tag: `git tag v1.1.0`
-4. Publish: `bun publish --access public`
+This repo includes Cursor skills under `.cursor/skills/` (`up-agents`, `quality-gate`, `professional-typing`). Not required for CLI users.
