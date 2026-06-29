@@ -1,0 +1,13 @@
+{
+  "name": "checkr",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "devDependencies": {
+    "vitest": "3.2.4"
+  },
+  "scripts": {
+    "test": "vitest run --config packages/helpers/vitest.config.js",
+    "test:helpers": "vitest run --config packages/helpers/vitest.config.js"
+  }
+}

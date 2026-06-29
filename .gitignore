@@ -1,0 +1,256 @@
+# ===================================
+# Operating Systems
+# ===================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+**/tsconfig.tsbuildinfo
+
+# ===================================
+# IDEs and Editors
+# ===================================
+# VSCode
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+*.rdb
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# ===================================
+# Node.js / Bun / Next.js / Vue (TanStack Router)
+# ===================================
+# Dependencies
+node_modules/
+jspm_packages/
+
+# Build outputs
+dist/
+build/
+out/
+.output/
+.vercel/
+.netlify/
+!packages/env/*
+
+# Next.js
+.next/
+next-env.d.ts
+
+# Vue (TanStack Router)
+.vue/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.turbo/
+
+# Environment variables
+.env
+.env*.local
+.env.production
+.env.development
+.env.test
+
+# SNDUK Environment Files (keep development templates, ignore production)
+packages/shared/src/configenv/environments/.env.*
+
+
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Bun specific
+.bun/
+bun.lockb
+
+# Package manager files (keep lockfiles for production)
+# Uncomment if you want to ignore lockfiles:
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# ===================================
+# Python / FastAPI / uv
+# ===================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+# lib/  # COMMENTED OUT - was catching packages/ui/src/lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+virtualenv/
+
+# uv specific
+.uv/
+uv.lock
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage
+.pytest_cache/
+.tox/
+.nox/
+htmlcov/
+.coverage
+.coverage.*
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.coveragerc
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# FastAPI specific
+*.db
+*.sqlite
+*.sqlite3
+
+# Alembic (database migrations)
+alembic/versions/__pycache__/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# ===================================
+# Databases
+# ===================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# ===================================
+# Miscellaneous
+# ===================================
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.orig
+
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Archives
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Secrets and keys
+*.pem
+*.key
+*.cert
+secrets/
+.secrets/
+
+# Local configuration
+.local/
+local_settings.py
+
+# Docker (if using)
+.dockerignore
+
+# Terraform (if using)
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Documentation builds
+docs/_build/
+site/
