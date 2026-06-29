@@ -1,11 +1,9 @@
 # @chekr/cli
 
-Terminal command for running project-defined chekr rules. Bundles the engine (`@chekr/core`) and rule-author utilities (`@chekr/utils`, `@chekr/helpers`).
+Terminal command for running project-defined chekr rules. Engine, helpers, and utilities live in `src/lib/` as plain modules — one installable package.
 
 ```bash
 npm install -D @chekr/cli
-npx chekr init
-npx chekr run
 ```
 
 Programmatic API:
@@ -14,4 +12,8 @@ Programmatic API:
 import { run } from "@chekr/cli/engine";
 ```
 
-See [chekr documentation](https://github.com/alaamer12/chekr#readme).
+Rule-author utilities:
+
+```js
+import { walkFiles, buildIgnoredLines } from "@chekr/cli/utils";
+```

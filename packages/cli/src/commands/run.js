@@ -1,7 +1,7 @@
 import { rm } from "node:fs/promises";
-import { ENGINE_DEFAULTS, loadConfig, resolveConfig, run } from "@chekr/core";
-import { toAbsolute } from "@chekr/helpers";
 import { cliToConfigPatch } from "../argv/cli-to-config-patch.js";
+import { ENGINE_DEFAULTS, loadConfig, resolveConfig, run } from "../lib/core/engine.js";
+import { toAbsolute } from "../lib/helpers/index.js";
 
 /**
  * @param {Record<string, string | boolean>} flags

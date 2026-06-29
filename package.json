@@ -25,7 +25,7 @@
     "chekr": "./packages/cli/src/index.js"
   },
   "workspaces": [
-    "packages/*",
+    "packages/cli",
     "types"
   ],
   "engines": {
@@ -40,15 +40,12 @@
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "test": "bun run test:all",
-    "test:helpers": "vitest run --config packages/helpers/vitest.config.js",
-    "test:utils": "vitest run --config packages/utils/vitest.config.js",
-    "test:core": "vitest run --config packages/core/vitest.config.js",
     "test:cli": "vitest run --config packages/cli/vitest.config.js",
     "test:types": "cd types && bun test",
-    "test:all": "bun run test:helpers && bun run test:utils && bun run test:core && bun run test:cli && bun run test:types",
+    "test:all": "bun run test:cli && bun run test:types",
     "typecheck": "tsc -p types/tsconfig.json",
     "typecheck:types": "tsc -p types/tsconfig.json",
-    "pack:cli": "node scripts/sync-cli-vendor.mjs && node scripts/verify-cli-pack.mjs",
+    "pack:cli": "node scripts/verify-cli-pack.mjs",
     "smoke": "cd examples/minimal && node ../../packages/cli/src/index.js run",
     "verify": "bun run lint && bun run typecheck && bun run test:all && bun run smoke"
   }

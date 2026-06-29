@@ -12,35 +12,14 @@
     },
     "packages/cli": {
       "name": "@chekr/cli",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "bin": {
         "chekr": "src/index.js",
       },
       "dependencies": {
-        "@chekr/core": "file:vendor/@chekr/core",
-        "@chekr/helpers": "file:vendor/@chekr/helpers",
-        "@chekr/utils": "file:vendor/@chekr/utils",
         "ignore": "^7.0.3",
         "simple-git": "^3.27.0",
       },
-    },
-    "packages/core": {
-      "name": "@chekr/core",
-      "version": "0.1.0",
-      "dependencies": {
-        "@chekr/helpers": "^0.1.0",
-        "@chekr/utils": "^0.1.0",
-        "ignore": "^7.0.3",
-        "simple-git": "^3.27.0",
-      },
-    },
-    "packages/helpers": {
-      "name": "@chekr/helpers",
-      "version": "0.1.0",
-    },
-    "packages/utils": {
-      "name": "@chekr/utils",
-      "version": "0.1.0",
     },
     "types": {
       "name": "@chekr/types",
@@ -71,13 +50,7 @@
 
     "@chekr/cli": ["@chekr/cli@workspace:packages/cli"],
 
-    "@chekr/core": ["@chekr/core@workspace:packages/core"],
-
-    "@chekr/helpers": ["@chekr/helpers@workspace:packages/helpers"],
-
     "@chekr/types": ["@chekr/types@workspace:types"],
-
-    "@chekr/utils": ["@chekr/utils@workspace:packages/utils"],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.28.1", "", { "os": "aix", "cpu": "ppc64" }, "sha512-Svl7tq8k/08+p6CXPpRjQ1fKX+1odH/BQbb48fV6fj3CWHhsoIOoY87w1oHXm0qEpkIK3ZfVgp0hed3XBXzXMQ=="],
 
@@ -294,12 +267,6 @@
     "why-is-node-running": ["why-is-node-running@2.3.0", "", { "dependencies": { "siginfo": "^2.0.0", "stackback": "0.0.2" }, "bin": { "why-is-node-running": "cli.js" } }, "sha512-hUrmaWBdVDcxvYqnyh09zunKzROWjbZTiNy8dBEjkS7ehEDQibXJ7XvlmtbwuTclUiIyN+CyXQD4Vmko8fNm8w=="],
 
     "zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
-
-    "@chekr/cli/@chekr/core": ["@chekr/core@file:packages/cli/vendor/@chekr/core", { "dependencies": { "ignore": "^7.0.3", "simple-git": "^3.27.0" } }],
-
-    "@chekr/cli/@chekr/helpers": ["@chekr/helpers@file:packages/cli/vendor/@chekr/helpers", {}],
-
-    "@chekr/cli/@chekr/utils": ["@chekr/utils@file:packages/cli/vendor/@chekr/utils", {}],
 
     "@vitest/snapshot/@vitest/pretty-format": ["@vitest/pretty-format@3.2.4", "", { "dependencies": { "tinyrainbow": "^2.0.0" } }, "sha512-IVNZik8IVRJRTr9fxlitMKeJeXFFFN0JaB9PHPGQ8NKQbGpfjlTx9zO4RefN8gp7eqjNy8nyK3NZmBzOPeIxtA=="],
 

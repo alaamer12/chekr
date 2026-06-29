@@ -1,33 +1,8 @@
-# chekr packages
+# packages
 
-## Published to npm
+| Package | npm | Purpose |
+|---------|-----|---------|
+| `@chekr/cli` | public | `chekr` binary, engine, helpers, and utils (`src/lib/`) |
+| `@chekr/types` | public | TypeScript definitions and Zod config schema |
 
-| Package | Description |
-|---------|-------------|
-| `@chekr/cli` | `chekr` binary; bundles engine + internal utilities |
-| `@chekr/types` | TypeScript definitions and Zod config schema |
-
-```bash
-npm install -D @chekr/cli @chekr/types
-```
-
-## Internal (monorepo only)
-
-These are **not** published separately. They ship inside `@chekr/cli` via `bundledDependencies`:
-
-| Package | Role |
-|---------|------|
-| `@chekr/helpers` | Config parse/merge, naming, paths |
-| `@chekr/utils` | File walker, ignore blocks, terminal colors |
-| `@chekr/core` | Engine — discover rules, scan, report |
-
-## Development
-
-```bash
-bun install
-bun run verify
-```
-
-## Publishing
-
-See [docs/PUBLISHING.md](../docs/PUBLISHING.md).
+Engine code lives in `packages/cli/src/lib/` as plain modules — not separate workspace packages.

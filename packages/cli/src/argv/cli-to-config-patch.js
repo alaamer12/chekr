@@ -1,5 +1,5 @@
-import { ENGINE_DEFAULTS } from "@chekr/core";
-import { parseArgsString, parsePositiveInt } from "@chekr/helpers";
+import { ENGINE_DEFAULTS } from "../lib/core/config/defaults.js";
+import { parseArgsString, parsePositiveInt } from "../lib/helpers/index.js";
 
 /** @typedef {{ patch: Record<string, unknown>, actions: Record<string, boolean> }} CliParseResult */
 

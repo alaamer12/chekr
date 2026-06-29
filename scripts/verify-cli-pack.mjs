@@ -16,7 +16,7 @@ const tarballLines =
     ? out.split("\n")
     : out.slice(contentsStart, contentsEnd).split("\n");
 
-const badPatterns = ["../../", ".bun/", "node_modules/.bun"];
+const badPatterns = ["../../", ".bun/", "node_modules/.bun", "vendor/"];
 for (const line of tarballLines) {
   for (const pattern of badPatterns) {
     if (line.includes(pattern)) {
@@ -27,16 +27,7 @@ for (const line of tarballLines) {
   }
 }
 
-const required = [
-  "vendor/@chekr/core",
-  "vendor/@chekr/core/node_modules/@chekr/helpers",
-  "vendor/@chekr/core/node_modules/@chekr/utils",
-  "vendor/@chekr/core/node_modules/simple-git",
-  "vendor/@chekr/core/node_modules/ignore",
-  "vendor/@chekr/helpers",
-  "vendor/@chekr/utils",
-  "src/index.js",
-];
+const required = ["src/lib/core/engine.js", "src/lib/helpers/index.js", "src/lib/utils/index.js", "src/index.js"];
 for (const entry of required) {
   if (!out.includes(entry)) {
     console.error(`npm pack dry-run missing: ${entry}`);
@@ -45,4 +36,9 @@ for (const entry of required) {
   }
 }
 
-console.log("npm pack dry-run OK — vendor layout and paths look correct");
+if (out.includes("@chekr/core") || out.includes("file:vendor")) {
+  console.error("npm pack still references separate @chekr/* packages — CLI must be a single unit");
+  process.exit(1);
+}
+
+console.log("npm pack dry-run OK — single-package CLI layout looks correct");

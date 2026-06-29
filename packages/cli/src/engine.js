@@ -1,4 +1,4 @@
-/** Public engine API — re-exported from the bundled internal @chekr/core package. */
+/** Public engine API for programmatic use. */
 export {
   ConfigError,
   ENGINE_DEFAULTS,
@@ -6,4 +6,4 @@ export {
   resolveConfig,
   run,
   validateConfig,
-} from "@chekr/core";
+} from "./lib/core/engine.js";

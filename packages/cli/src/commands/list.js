@@ -1,8 +1,8 @@
 import { readdir } from "node:fs/promises";
 import path from "node:path";
-import { loadConfig, resolveConfig } from "@chekr/core";
-import { toAbsolute } from "@chekr/helpers";
 import { cliToConfigPatch } from "../argv/cli-to-config-patch.js";
+import { loadConfig, resolveConfig } from "../lib/core/engine.js";
+import { toAbsolute } from "../lib/helpers/index.js";
 
 /**
  * @param {Record<string, string | boolean>} flags
