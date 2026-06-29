@@ -96,9 +96,10 @@ export function resolveStepOrder(checks, config) {
     } else if (configSteps.length > 0) {
       const stepIds = configSteps.map((s) => /** @type {{ id: string }} */ (s).id);
       const fromConfig = stepIds.map((id) => byId.get(id)).filter(Boolean);
-      const configIdSet = new Set(stepIds);
-      const rest = checks.filter((c) => !configIdSet.has(c.id));
-      ordered = [...fromConfig, ...rest];
+      // When a `steps` array is present, it is an explicit allowlist.
+      // Checks discovered on disk but NOT listed in `steps` are skipped.
+      // To re-enable an omitted check, add it back to `steps` or use `config.enable`.
+      ordered = [...fromConfig];
     }
   }
 
