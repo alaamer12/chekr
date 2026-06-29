@@ -13,17 +13,21 @@
     "packages/cli": {
       "name": "@checkr/cli",
       "version": "0.1.0",
+      "bin": {
+        "checkr": "./src/index.js",
+      },
       "dependencies": {
-        "@checkr/core": "workspace:*",
-        "@checkr/helpers": "workspace:*",
+        "@checkr/core": "0.1.0",
+        "@checkr/helpers": "0.1.0",
+        "@checkr/utils": "0.1.0",
       },
     },
     "packages/core": {
       "name": "@checkr/core",
       "version": "0.1.0",
       "dependencies": {
-        "@checkr/helpers": "workspace:*",
-        "@checkr/utils": "workspace:*",
+        "@checkr/helpers": "^0.1.0",
+        "@checkr/utils": "^0.1.0",
         "ignore": "^7.0.3",
         "simple-git": "^3.27.0",
       },
@@ -41,9 +45,6 @@
       "version": "0.1.0",
       "dependencies": {
         "zod": "^3.24.0",
-      },
-      "devDependencies": {
-        "vitest": "3.2.4",
       },
     },
   },

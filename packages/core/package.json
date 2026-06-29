@@ -17,6 +17,7 @@
     "url": "https://github.com/alaamer12/chekr/issues"
   },
   "homepage": "https://github.com/alaamer12/chekr/tree/main/packages/core#readme",
+  "private": true,
   "keywords": [
     "checkr",
     "engine",
@@ -24,9 +25,6 @@
     "design-system",
     "linter"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js"

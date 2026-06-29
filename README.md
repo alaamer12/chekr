@@ -105,18 +105,19 @@ See [CLI reference](docs/CLI.md).
 
 ## Packages
 
-| Package | npm | Purpose |
-|---------|-----|---------|
-| `@checkr/cli` | `npm i -g @checkr/cli` | Terminal command |
-| `@checkr/core` | `npm i @checkr/core` | Engine API (`run()`, `resolveConfig()`) |
-| `@checkr/utils` | `npm i @checkr/utils` | Rule helpers (`walkFiles`, `buildIgnoredLines`) |
-| `@checkr/helpers` | `npm i @checkr/helpers` | Config parse/merge utilities |
-| `@checkr/types` | `npm i -D @checkr/types` | TypeScript definitions |
+Only **two packages** are published to npm:
+
+| Package | Install | Purpose |
+|---------|---------|---------|
+| `@checkr/cli` | `npm i -D @checkr/cli` | `checkr` command + bundled engine & rule utilities |
+| `@checkr/types` | `npm i -D @checkr/types` | TypeScript definitions for `checkr.config.js` |
+
+Installing `@checkr/cli` also places `@checkr/core`, `@checkr/helpers`, and `@checkr/utils` in `node_modules` (bundled, not separate registry packages). Rule files can import from `@checkr/utils` as documented.
 
 ### Programmatic usage
 
 ```js
-import { run } from "@checkr/core";
+import { run } from "@checkr/cli/engine";
 
 const result = await run({
   cwd: process.cwd(),

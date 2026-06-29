@@ -1,11 +1,9 @@
 # @checkr/utils
 
-Utilities for checkr rule authors.
+**Internal monorepo package** — not published to npm separately. Shipped inside `@checkr/cli` via `bundledDependencies`.
+
+Rule authors import from `@checkr/utils` after installing `@checkr/cli`:
 
 ```js
 import { walkFiles, buildIgnoredLines } from "@checkr/utils";
-
-const ignored = buildIgnoredLines(lines, { marker: "@checkr-ignore" });
 ```
-
-See [Rule authoring guide](https://github.com/alaamer12/chekr/blob/main/docs/RULE_AUTHORING.md).

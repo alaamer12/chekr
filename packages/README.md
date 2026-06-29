@@ -1,23 +1,25 @@
 # checkr packages
 
-Monorepo packages published under the `@checkr` npm scope.
+## Published to npm
 
-## Install (users)
+| Package | Description |
+|---------|-------------|
+| `@checkr/cli` | `checkr` binary; bundles engine + internal utilities |
+| `@checkr/types` | TypeScript definitions and Zod config schema |
 
 ```bash
-npm install -g @checkr/cli
-npm install -D @checkr/types
+npm install -D @checkr/cli @checkr/types
 ```
 
-## Packages
+## Internal (monorepo only)
 
-| Package | Publish order | Description |
-|---------|---------------|-------------|
-| `@checkr/helpers` | 1 | Config parse/merge, naming |
-| `@checkr/utils` | 2 | Rule-author utilities |
-| `@checkr/types` | 3 | TypeScript + Zod schema |
-| `@checkr/core` | 4 | Engine |
-| `@checkr/cli` | 5 | `checkr` binary |
+These are **not** published separately. They ship inside `@checkr/cli` via `bundledDependencies`:
+
+| Package | Role |
+|---------|------|
+| `@checkr/helpers` | Config parse/merge, naming, paths |
+| `@checkr/utils` | File walker, ignore blocks, terminal colors |
+| `@checkr/core` | Engine — discover rules, scan, report |
 
 ## Development
 

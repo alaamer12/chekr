@@ -1,11 +1,11 @@
 # @checkr/core
 
-checkr engine — load rules, scan files, report violations.
+**Internal monorepo package** — not published to npm separately. Shipped inside `@checkr/cli` via `bundledDependencies`.
+
+Engine: discover rules, scan files, cache, report violations.
+
+For programmatic use, import from `@checkr/cli/engine`:
 
 ```js
-import { run } from "@checkr/core";
-
-const result = await run({ cwd: process.cwd() });
+import { run } from "@checkr/cli/engine";
 ```
-
-See [checkr documentation](https://github.com/alaamer12/chekr#readme).

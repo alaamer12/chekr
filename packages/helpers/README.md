@@ -1,5 +1,5 @@
 # @checkr/helpers
 
-Internal helpers for config merge, CLI argument parsing, and naming conventions.
+**Internal monorepo package** — not published to npm separately. Shipped inside `@checkr/cli` via `bundledDependencies`.
 
-Used by `@checkr/core` and `@checkr/cli`. Rule authors rarely import this directly.
+Config parsing, path utilities, and naming helpers used by the engine and CLI.

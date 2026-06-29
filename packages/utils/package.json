@@ -17,6 +17,7 @@
     "url": "https://github.com/alaamer12/chekr/issues"
   },
   "homepage": "https://github.com/alaamer12/chekr/tree/main/packages/utils#readme",
+  "private": true,
   "keywords": [
     "checkr",
     "file-walker",
@@ -24,9 +25,6 @@
     "ignore",
     "utils"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js"

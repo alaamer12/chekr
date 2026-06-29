@@ -5,11 +5,11 @@
 ```
 checkr/
   packages/
-    helpers/     @checkr/helpers — config parse, naming, path utils
-    utils/       @checkr/utils   — file walker, ignore blocks, colors
-    core/        @checkr/core    — engine
-    cli/         @checkr/cli     — checkr binary
-  types/         @checkr/types   — TypeScript definitions + Zod schema
+    helpers/     @checkr/helpers — internal; bundled into CLI
+    utils/       @checkr/utils   — internal; bundled into CLI
+    core/        @checkr/core    — internal; bundled into CLI
+    cli/         @checkr/cli     — published — `checkr` binary
+  types/         @checkr/types   — published — TypeScript + Zod
   docs/          User + internal documentation
   examples/      minimal + symphony-rules samples
 ```

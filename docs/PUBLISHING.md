@@ -1,12 +1,26 @@
 # Publishing checkr to npm
 
-First-time guide for publishing the `@checkr` scope from this monorepo.
+Only **two packages** are published to npm:
+
+| Package | Purpose |
+|---------|---------|
+| `@checkr/cli` | `checkr` binary + bundled engine & rule utilities |
+| `@checkr/types` | TypeScript definitions and Zod config schema |
+
+`@checkr/helpers`, `@checkr/utils`, and `@checkr/core` are **private** monorepo packages. They ship **inside** `@checkr/cli` via `bundledDependencies` — not as separate registry packages.
+
+After `npm install -D @checkr/cli`, rule files can still use:
+
+```js
+import { walkFiles, buildIgnoredLines } from "@checkr/utils";
+```
+
+Those modules are hoisted from the CLI bundle into `node_modules`.
 
 ## Prerequisites
 
 1. **npm account** — [https://www.npmjs.com/signup](https://www.npmjs.com/signup)
-2. **Scoped org or user** — packages are `@checkr/cli`, `@checkr/core`, etc.
-   - If you do not own the `@checkr` org on npm, create it under your user or request the scope.
+2. **`@checkr` scope** on npm (org or user)
 3. **Logged in locally:**
 
 ```bash
@@ -21,81 +35,53 @@ bun install
 bun run verify
 ```
 
-## Publish order
-
-Packages depend on each other. Publish in this order (dependencies first):
-
-```
-1. @checkr/helpers   (no @checkr deps)
-2. @checkr/utils     (no @checkr deps)
-3. @checkr/types     (optional; zod dependency)
-4. @checkr/core      (helpers, utils, simple-git, ignore)
-5. @checkr/cli       (core, helpers)
-```
-
-## Before each publish
+## Before publishing
 
 ### 1. Align versions
 
-All `@checkr/*` packages should share the same version (e.g. `0.1.0`).
+`@checkr/cli`, `@checkr/types`, and all internal packages should share the same version (e.g. `0.1.0`).
 
-### 2. Replace workspace deps for npm
+`@checkr/cli` lists internal packages with **exact** versions (`0.1.0`, not `workspace:*`) so `npm pack` can bundle them.
 
-Published tarballs **cannot** use `workspace:*`. Each package `package.json` must list semver ranges:
+### 2. Dry-run the CLI tarball
 
-```json
-"@checkr/helpers": "^0.1.0"
-```
-
-*(This repo already uses `^0.1.0` in publishable packages.)*
-
-### 3. Dry-run the tarball
-
-From each package directory:
+From `packages/cli`:
 
 ```bash
-cd packages/helpers
 npm pack --dry-run
 ```
 
-Confirm only `src/` (or declared `files`) are included — no tests, no `.env`.
+Confirm the tarball includes bundled packages:
 
-### 4. Public access for scoped packages
+```
+node_modules/@checkr/core
+node_modules/@checkr/helpers
+node_modules/@checkr/utils
+```
 
-Scoped packages are private by default. Always use:
+### 3. Public access
+
+Scoped packages default to private. Always use:
 
 ```bash
 npm publish --access public
 ```
 
-## First publish (step by step)
+## First publish
 
 From repository root, after `bun run verify` passes:
 
 ```bash
-cd packages/helpers
+cd types
 npm publish --access public
 ```
 
 ```bash
-cd ../utils
+cd ../packages/cli
 npm publish --access public
 ```
 
-```bash
-cd ../../types
-npm publish --access public
-```
-
-```bash
-cd ../packages/core
-npm publish --access public
-```
-
-```bash
-cd ../cli
-npm publish --access public
-```
+Order does not matter between these two — they have no dependency on each other.
 
 ## Verify install
 
@@ -109,30 +95,35 @@ npx checkr init
 npx checkr run
 ```
 
+Confirm rule utilities resolve:
+
+```bash
+node -e "import('@checkr/utils').then(m => console.log(Object.keys(m)))"
+```
+
 ## Version bumps (after v0.1.0)
 
-1. Bump version in **all** `packages/*/package.json` and `types/package.json`
-2. Update internal dependency ranges if needed (`^0.2.0`)
+1. Bump version in `types/package.json`, `packages/cli/package.json`, and all internal `packages/*/package.json`
+2. Update exact internal versions in `packages/cli/package.json` (`@checkr/core`, etc.)
 3. `bun run verify`
-4. Publish in dependency order again
+4. Publish `@checkr/types` and `@checkr/cli`
 5. Tag git: `git tag v0.2.0 && git push origin v0.2.0`
-
-Consider [Changesets](https://github.com/changesets/changesets) for automated versioning later.
 
 ## Troubleshooting
 
 | Error | Fix |
 |-------|-----|
 | `402 You must sign up for private packages` | Add `--access public` |
-| `403 Forbidden` | Not a member of `@checkr` org; publish under your scope or join org |
-| `409 Cannot publish over existing version` | Bump version in package.json |
-| `E404 @checkr/helpers not found` | Publish dependencies before dependents |
-| `workspace:*` in published package | Replace with semver before publish |
+| `403 Forbidden` | Not a member of `@checkr` org |
+| `409 Cannot publish over existing version` | Bump version |
+| Bundled packages missing from tarball | Run `bun install` from root; ensure internal packages exist in `node_modules` |
+| `workspace:*` in published package | Use exact semver in `packages/cli` dependencies |
 
 ## What stays private
 
-Root `package.json` has `"private": true` — the monorepo itself is **not** published. Only `@checkr/*` packages go to npm.
+- Root `package.json` (`"private": true`) — monorepo dev tooling
+- `@checkr/helpers`, `@checkr/utils`, `@checkr/core` — bundled into CLI, not published separately
 
 ## CI publish (optional)
 
-Use `NPM_TOKEN` with `npm publish --access public` in GitHub Actions after tests pass. Store token as repository secret; never commit it.
+Use `NPM_TOKEN` with `npm publish --access public` in GitHub Actions after tests pass.

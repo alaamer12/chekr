@@ -33,14 +33,25 @@
   },
   "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": "./src/index.js",
+    "./engine": "./src/engine.js"
   },
   "files": [
     "src",
     "README.md"
   ],
+  "scripts": {
+    "prepublishOnly": "npm pack --dry-run",
+    "test": "vitest run"
+  },
   "dependencies": {
-    "@checkr/core": "^0.1.0",
-    "@checkr/helpers": "^0.1.0"
-  }
+    "@checkr/core": "0.1.0",
+    "@checkr/helpers": "0.1.0",
+    "@checkr/utils": "0.1.0"
+  },
+  "bundledDependencies": [
+    "@checkr/core",
+    "@checkr/helpers",
+    "@checkr/utils"
+  ]
 }
