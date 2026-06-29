@@ -45,19 +45,22 @@ bun run verify
 
 ### 2. Dry-run the CLI tarball
 
-From `packages/cli`:
+From repo root (vendors internal packages first — required with Bun workspaces):
 
 ```bash
-npm pack --dry-run
+node scripts/prepare-cli-publish.mjs
+node scripts/verify-cli-pack.mjs
 ```
 
-Confirm the tarball includes bundled packages:
+Or from `packages/cli` after prepare — confirm **no** `../` or `.bun/` paths, and bundled packages exist:
 
 ```
 node_modules/@chekr/core
 node_modules/@chekr/helpers
 node_modules/@chekr/utils
 ```
+
+`npm publish` runs these steps automatically via `prepublishOnly`.
 
 ### 3. Public access
 
@@ -118,7 +121,8 @@ node -e "import('@chekr/utils').then(m => console.log(Object.keys(m)))"
 | `402 You must sign up for private packages` | Add `--access public` |
 | `403 Forbidden` | Not a member of `@chekr` org |
 | `409 Cannot publish over existing version` | Bump version |
-| Bundled packages missing from tarball | Run `bun install` from root; ensure internal packages exist in `node_modules` |
+| Bundled packages missing from tarball | Run `node scripts/prepare-cli-publish.mjs` before publish |
+| `415 invalid path: package/../../node_modules` | Bun symlinks — run prepare script; do not `npm pack` without it |
 | `workspace:*` in published package | Use exact semver in `packages/cli` dependencies |
 
 ## What stays private

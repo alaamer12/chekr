@@ -41,13 +41,15 @@
     "README.md"
   ],
   "scripts": {
-    "prepublishOnly": "npm pack --dry-run",
+    "prepublishOnly": "node ../../scripts/prepare-cli-publish.mjs && node ../../scripts/verify-cli-pack.mjs",
     "test": "vitest run"
   },
   "dependencies": {
     "@chekr/core": "0.1.0",
     "@chekr/helpers": "0.1.0",
-    "@chekr/utils": "0.1.0"
+    "@chekr/utils": "0.1.0",
+    "ignore": "^7.0.3",
+    "simple-git": "^3.27.0"
   },
   "bundledDependencies": [
     "@chekr/core",
