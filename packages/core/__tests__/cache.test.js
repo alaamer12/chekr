@@ -56,8 +56,8 @@ describe("parseModifiedPathsFromStatus", () => {
   });
 
   test("ignores cache output paths via exempt prefixes", () => {
-    const paths = parseModifiedPathsFromStatus("?? .checkr-cache/main/steps/foo.json\n", [
-      ".checkr-cache/",
+    const paths = parseModifiedPathsFromStatus("?? .chekr-cache/main/steps/foo.json\n", [
+      ".chekr-cache/",
     ]);
     expect(paths.size).toBe(0);
   });

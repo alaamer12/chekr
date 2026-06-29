@@ -1,13 +1,13 @@
-# checkr
+# chekr
 
 **AI output alignment checker** — enforce your design system and architectural contracts with plain JavaScript rules.
 
-checkr is a pipeline step between AI-generated code and commit. It catches violations ESLint cannot: raw design tokens, wrong component usage, import boundaries, and project-specific patterns.
+chekr is a pipeline step between AI-generated code and commit. It catches violations ESLint cannot: raw design tokens, wrong component usage, import boundaries, and project-specific patterns.
 
 ```
 AI generates code
   → ESLint     syntax & style
-  → checkr     design & architecture contract   ← this tool
+  → chekr     design & architecture contract   ← this tool
   → Tests      behavior
   → Commit
 ```
@@ -15,9 +15,9 @@ AI generates code
 ## Install
 
 ```bash
-npm install -g @checkr/cli
+npm install -g @chekr/cli
 # or as a dev dependency
-npm install -D @checkr/cli
+npm install -D @chekr/cli
 ```
 
 Requires **Node.js 18+**.
@@ -26,24 +26,24 @@ Requires **Node.js 18+**.
 
 ```bash
 # Scaffold rules and config in your project
-checkr init
+chekr init
 
 # Run all checks
-checkr run
+chekr run
 
 # Only changed files (git)
-checkr run --changed
+chekr run --changed
 
 # JSON report for CI
-checkr run --reporter json --report ./checkr-report.json
+chekr run --reporter json --report ./chekr-report.json
 ```
 
 Your project layout:
 
 ```
 your-app/
-  checkr.config.js          # optional — sensible defaults without it
-  .checkr/
+  chekr.config.js          # optional — sensible defaults without it
+  .chekr/
     checks/
       check_raw_colors.js   # your rules
       check_raw_sizes.js
@@ -54,7 +54,7 @@ your-app/
 ### Minimal rule
 
 ```js
-// .checkr/checks/check_raw_colors.js
+// .chekr/checks/check_raw_colors.js
 export function checkRawColors(source, filePath) {
   const violations = [];
   for (const [i, line] of source.split("\n").entries()) {
@@ -74,12 +74,12 @@ export function checkRawColors(source, filePath) {
 ### Config with types
 
 ```js
-// checkr.config.js
-/** @type {import('checkr').CheckrConfig} */
+// chekr.config.js
+/** @type {import('chekr').ChekrConfig} */
 export default {
-  checksDir: "./.checkr/checks",
+  checksDir: "./.chekr/checks",
   gitignore: ".gitignore",
-  ignoreMarker: "@checkr-ignore",
+  ignoreMarker: "@chekr-ignore",
   steps: [
     { id: "check_raw_colors", step: 1 },
     { id: "check_raw_sizes", step: 2 },
@@ -87,17 +87,17 @@ export default {
 };
 ```
 
-Install types for editor support: `npm install -D @checkr/types`
+Install types for editor support: `npm install -D @chekr/types`
 
 ## CLI
 
 | Command | Description |
 |---------|-------------|
-| `checkr run` | Run checks (default command) |
-| `checkr list` | List discovered rules |
-| `checkr validate` | Validate rule file contracts |
-| `checkr init` | Create `.checkr/` scaffold |
-| `checkr fix` | Auto-fixers *(planned)* |
+| `chekr run` | Run checks (default command) |
+| `chekr list` | List discovered rules |
+| `chekr validate` | Validate rule file contracts |
+| `chekr init` | Create `.chekr/` scaffold |
+| `chekr fix` | Auto-fixers *(planned)* |
 
 Common flags: `--changed`, `--staged`, `--no-bail`, `--skip`, `--only`, `--gitignore`, `--reporter json`.
 
@@ -109,15 +109,15 @@ Only **two packages** are published to npm:
 
 | Package | Install | Purpose |
 |---------|---------|---------|
-| `@checkr/cli` | `npm i -D @checkr/cli` | `checkr` command + bundled engine & rule utilities |
-| `@checkr/types` | `npm i -D @checkr/types` | TypeScript definitions for `checkr.config.js` |
+| `@chekr/cli` | `npm i -D @chekr/cli` | `chekr` command + bundled engine & rule utilities |
+| `@chekr/types` | `npm i -D @chekr/types` | TypeScript definitions for `chekr.config.js` |
 
-Installing `@checkr/cli` also places `@checkr/core`, `@checkr/helpers`, and `@checkr/utils` in `node_modules` (bundled, not separate registry packages). Rule files can import from `@checkr/utils` as documented.
+Installing `@chekr/cli` also places `@chekr/core`, `@chekr/helpers`, and `@chekr/utils` in `node_modules` (bundled, not separate registry packages). Rule files can import from `@chekr/utils` as documented.
 
 ### Programmatic usage
 
 ```js
-import { run } from "@checkr/cli/engine";
+import { run } from "@chekr/cli/engine";
 
 const result = await run({
   cwd: process.cwd(),
@@ -132,7 +132,7 @@ console.log(result.passed, result.violations.length);
 
 | Doc | Audience |
 |-----|----------|
-| [Configuration](docs/CONFIG.md) | `checkr.config.js`, per-step overrides, gitignore |
+| [Configuration](docs/CONFIG.md) | `chekr.config.js`, per-step overrides, gitignore |
 | [CLI](docs/CLI.md) | Commands and flags |
 | [Rule authoring](docs/RULE_AUTHORING.md) | Writing checks and fixes |
 | [Publishing](docs/PUBLISHING.md) | First npm publish |
@@ -147,7 +147,7 @@ Internal specs: [docs/internal/](docs/internal/)
 
 ## Why not ESLint?
 
-ESLint excels at syntax and universal style. checkr excels at **your** contract — token names, component hierarchies, folder import rules — in ~20 lines of plain JS per rule, without AST plugin boilerplate.
+ESLint excels at syntax and universal style. chekr excels at **your** contract — token names, component hierarchies, folder import rules — in ~20 lines of plain JS per rule, without AST plugin boilerplate.
 
 ## License
 

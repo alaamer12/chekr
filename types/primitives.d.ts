@@ -1,6 +1,6 @@
 /**
  * Re-exports semantic primitive names for advanced typing.
- * Primary entry: `import('checkr')` from checkr.config.d.ts
+ * Primary entry: `import('chekr')` from chekr.config.d.ts
  */
 
 export type PositiveInt = number;

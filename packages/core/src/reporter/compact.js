@@ -1,4 +1,4 @@
-import { fail, pass } from "@checkr/utils";
+import { fail, pass } from "@chekr/utils";
 
 /**
  * @param {object} result

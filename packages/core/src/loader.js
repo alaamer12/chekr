@@ -1,7 +1,7 @@
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { deriveCheckExport, toAbsolute } from "@checkr/helpers";
+import { deriveCheckExport, toAbsolute } from "@chekr/helpers";
 
 /**
  * @typedef {object} LoadedCheck

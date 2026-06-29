@@ -1,4 +1,4 @@
-# checkr — Design Decisions
+# chekr — Design Decisions
 
 Key decisions made during design, with rationale. This is the living record of "why" — so future contributors don't re-debate settled questions.
 
@@ -21,7 +21,7 @@ Key decisions made during design, with rationale. This is the living record of "
 
 **Decision:** Rules operate on source strings (line by line), not AST nodes.
 
-**Rationale:** The violations checkr catches are pattern-based, not semantic. `"16px"` is always wrong regardless of context. `<Box as="button">` is always wrong regardless of where it appears. String matching is sufficient and 10x simpler to write than AST visitors.
+**Rationale:** The violations chekr catches are pattern-based, not semantic. `"16px"` is always wrong regardless of context. `<Box as="button">` is always wrong regardless of where it appears. String matching is sufficient and 10x simpler to write than AST visitors.
 
 **Trade-off:** Some rules that require semantic understanding (e.g. "this variable is used as a color") cannot be expressed. That's acceptable — those rules belong in TypeScript's type system, not here.
 
@@ -65,51 +65,51 @@ Key decisions made during design, with rationale. This is the living record of "
 
 **Decision:** Use the standard Unix `--` separator to pass arguments to individual fixers.
 
-**Rationale:** `--` is the established convention for "end of tool flags, start of passthrough args". It's familiar to any Unix user, requires no special documentation, and avoids flag namespace collisions between checkr and the fixer.
+**Rationale:** `--` is the established convention for "end of tool flags, start of passthrough args". It's familiar to any Unix user, requires no special documentation, and avoids flag namespace collisions between chekr and the fixer.
 
 ---
 
-## DD-08: `@checkr/utils` is zero-dependency
+## DD-08: `@chekr/utils` is zero-dependency
 
-**Decision:** `@checkr/utils` has no npm dependencies.
+**Decision:** `@chekr/utils` has no npm dependencies.
 
-**Rationale:** Rule authors import from `@checkr/utils`. If utils had dependencies, those would be transitive dependencies of every project using checkr. Keeping utils dependency-free makes the install footprint minimal and avoids version conflicts.
+**Rationale:** Rule authors import from `@chekr/utils`. If utils had dependencies, those would be transitive dependencies of every project using chekr. Keeping utils dependency-free makes the install footprint minimal and avoids version conflicts.
 
 ---
 
 ## DD-09: Not a replacement for ESLint
 
-**Decision:** checkr explicitly does not replace ESLint. It is a complementary pipeline step.
+**Decision:** chekr explicitly does not replace ESLint. It is a complementary pipeline step.
 
-**Rationale:** ESLint is excellent at what it does — syntax, style, common JS/TS patterns. checkr is for a different class of violations: design system contract enforcement, AI output alignment. Trying to do both in one tool would make both worse.
+**Rationale:** ESLint is excellent at what it does — syntax, style, common JS/TS patterns. chekr is for a different class of violations: design system contract enforcement, AI output alignment. Trying to do both in one tool would make both worse.
 
-The positioning is: ESLint catches code quality issues, checkr catches design contract violations. They run at different points in the pipeline and serve different purposes.
+The positioning is: ESLint catches code quality issues, chekr catches design contract violations. They run at different points in the pipeline and serve different purposes.
 
 ---
 
 ## DD-10: Ignore blocks use a keyword, not line numbers
 
-**Decision:** Ignore blocks use `@checkr-ignore-start` / `@checkr-ignore-end` keywords, not `// checkr-disable-next-line` or line number ranges.
+**Decision:** Ignore blocks use `@chekr-ignore-start` / `@chekr-ignore-end` keywords, not `// chekr-disable-next-line` or line number ranges.
 
 **Rationale:** Block-based ignores are more robust to line number changes (refactoring, insertions). The start/end pattern is explicit about what's being ignored and why (the comment between the markers explains the reason). Single-line disables encourage lazy suppression without explanation.
 
 ---
 
-## DD-11: Working directory is `.checkr/`
+## DD-11: Working directory is `.chekr/`
 
-**Decision:** The default working directory for checks and fixes is `.checkr/checks/` and `.checkr/fixes/`. This replaces the previous default of `./checks/` and `./fixes/`.
+**Decision:** The default working directory for checks and fixes is `.chekr/checks/` and `.chekr/fixes/`. This replaces the previous default of `./checks/` and `./fixes/`.
 
-**Rationale:** A dotfolder keeps the project root clean and signals that this is tooling configuration, not source code. It follows the established convention of `.github/`, `.husky/`, `.vscode/` — tooling lives in dotfolders. The `.checkr/` name is unambiguous and directly tied to the tool name.
+**Rationale:** A dotfolder keeps the project root clean and signals that this is tooling configuration, not source code. It follows the established convention of `.github/`, `.husky/`, `.vscode/` — tooling lives in dotfolders. The `.chekr/` name is unambiguous and directly tied to the tool name.
 
 **Structure:**
 ```
-.checkr/
+.chekr/
   checks/
     check_raw_colors.js
     check_raw_sizes.js
   fixes/
     fix_raw_sizes.js
-  checkr.config.js       ← optional, can also live at project root
+  chekr.config.js       ← optional, can also live at project root
 ```
 
 **Override:** The `checksDir` and `fixesDir` config options still work. Teams that prefer a different location can set them explicitly.
@@ -136,7 +136,7 @@ Helper functions are still allowed — they just must not start with `check` or 
 
 **Error messages are explicit:**
 ```
-❌ .checkr/checks/check_ambiguous.js — exports 2 functions starting with "check": checkFoo, checkBar
+❌ .chekr/checks/check_ambiguous.js — exports 2 functions starting with "check": checkFoo, checkBar
    Each check file must export exactly one check function.
 ```
 

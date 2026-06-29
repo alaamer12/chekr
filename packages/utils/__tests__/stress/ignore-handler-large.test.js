@@ -3,7 +3,7 @@ import { buildIgnoredLines } from "../../src/ignore-handler.js";
 
 const LINE_COUNT = 50_000;
 const BLOCK_EVERY = 250;
-const MARKER = "@checkr-ignore";
+const MARKER = "@chekr-ignore";
 
 function buildLargeSource(lineCount) {
   const lines = [];

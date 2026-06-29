@@ -141,7 +141,7 @@ function validateStepConfig(step, path) {
 }
 
 /**
- * Validate a Checkr config object.
+ * Validate a Chekr config object.
  * @param {unknown} config
  * @returns {Record<string, unknown>}
  */

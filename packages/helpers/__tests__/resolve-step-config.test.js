@@ -6,7 +6,7 @@ describe("resolveStepConfig", () => {
     include: ["**/*"],
     exclude: ["**/*.test.*"],
     gitignore: ".gitignore",
-    ignoreMarker: "@checkr-ignore",
+    ignoreMarker: "@chekr-ignore",
     bail: true,
     concurrency: 4,
   };
@@ -19,7 +19,7 @@ describe("resolveStepConfig", () => {
       include: ["**/*"],
       exclude: ["**/*.test.*"],
       gitignore: ".gitignore",
-      ignoreMarker: "@checkr-ignore",
+      ignoreMarker: "@chekr-ignore",
       bail: true,
       concurrency: 4,
       enabled: true,

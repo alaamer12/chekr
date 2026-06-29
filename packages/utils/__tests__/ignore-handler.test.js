@@ -247,12 +247,12 @@ describe("buildIgnoredLines", () => {
     expect(ignored.has(4)).toBe(false);
   });
 
-  test("uses @checkr-ignore marker by default", () => {
+  test("uses @chekr-ignore marker by default", () => {
     const lines = [
       "const x = 1",
-      "// @checkr-ignore-start",
+      "// @chekr-ignore-start",
       'const bad = "violation"',
-      "// @checkr-ignore-end",
+      "// @chekr-ignore-end",
       "const y = 2",
     ];
     const ignored = buildIgnoredLines(lines);

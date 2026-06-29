@@ -1,4 +1,4 @@
-import { mergeConfig, pickDefined } from "@checkr/helpers";
+import { mergeConfig, pickDefined } from "@chekr/helpers";
 import { ENGINE_DEFAULTS } from "./defaults.js";
 import { validateConfig } from "./validate-config.js";
 

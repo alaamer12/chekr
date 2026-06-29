@@ -1,5 +1,5 @@
-import { ENGINE_DEFAULTS } from "@checkr/core";
-import { parseArgsString, parsePositiveInt } from "@checkr/helpers";
+import { ENGINE_DEFAULTS } from "@chekr/core";
+import { parseArgsString, parsePositiveInt } from "@chekr/helpers";
 
 /** @typedef {{ patch: Record<string, unknown>, actions: Record<string, boolean> }} CliParseResult */
 

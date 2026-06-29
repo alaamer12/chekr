@@ -1,13 +1,13 @@
-# checkr documentation
+# chekr documentation
 
 ## User guides
 
 | Guide | Description |
 |-------|-------------|
-| [Configuration](CONFIG.md) | `checkr.config.js`, gitignore, per-step overrides, CLI overrides |
+| [Configuration](CONFIG.md) | `chekr.config.js`, gitignore, per-step overrides, CLI overrides |
 | [CLI reference](CLI.md) | Commands, flags, exit codes |
 | [Rule authoring](RULE_AUTHORING.md) | Write `check_*.js` rules and `fix_*.js` fixers |
-| [Publishing](PUBLISHING.md) | Publish `@checkr/cli` and `@checkr/types` to npm |
+| [Publishing](PUBLISHING.md) | Publish `@chekr/cli` and `@chekr/types` to npm |
 
 ## Development
 

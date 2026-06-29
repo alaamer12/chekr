@@ -175,7 +175,7 @@ RETURN Review Report:
 | **2** | Narrow refactor: implement → review-heavy |
 | **5+** | Split one layer further — add reference in [reference.md](reference.md) |
 
-For checkr-specific 4-worker split, see [reference.md](reference.md).
+For chekr-specific 4-worker split, see [reference.md](reference.md).
 
 ---
 
@@ -205,7 +205,7 @@ For checkr-specific 4-worker split, see [reference.md](reference.md).
 
 ## Additional resources
 
-- Checkr 4-worker assignment: [reference.md](reference.md)
+- Chekr 4-worker assignment: [reference.md](reference.md)
 - Slash command entry: `.cursor/commands/up-agents.md`
 - Agent preferences: `AGENTS.md`
 - Branching pools: `.cursor/commands/pool-agents.md`

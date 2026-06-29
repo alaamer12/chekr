@@ -1,10 +1,10 @@
 {
-  "name": "@checkr/core",
+  "name": "@chekr/core",
   "version": "0.1.0",
-  "description": "checkr engine — discover rules, scan files, report violations",
+  "description": "chekr engine — discover rules, scan files, report violations",
   "license": "MIT",
   "type": "module",
-  "author": "checkr contributors",
+  "author": "chekr contributors",
   "engines": {
     "node": ">=18"
   },
@@ -19,7 +19,7 @@
   "homepage": "https://github.com/alaamer12/chekr/tree/main/packages/core#readme",
   "private": true,
   "keywords": [
-    "checkr",
+    "chekr",
     "engine",
     "rules",
     "design-system",
@@ -34,8 +34,8 @@
     "README.md"
   ],
   "dependencies": {
-    "@checkr/helpers": "^0.1.0",
-    "@checkr/utils": "^0.1.0",
+    "@chekr/helpers": "^0.1.0",
+    "@chekr/utils": "^0.1.0",
     "ignore": "^7.0.3",
     "simple-git": "^3.27.0"
   },

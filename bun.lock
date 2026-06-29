@@ -11,37 +11,37 @@
       },
     },
     "packages/cli": {
-      "name": "@checkr/cli",
+      "name": "@chekr/cli",
       "version": "0.1.0",
       "bin": {
-        "checkr": "./src/index.js",
+        "chekr": "./src/index.js",
       },
       "dependencies": {
-        "@checkr/core": "0.1.0",
-        "@checkr/helpers": "0.1.0",
-        "@checkr/utils": "0.1.0",
+        "@chekr/core": "0.1.0",
+        "@chekr/helpers": "0.1.0",
+        "@chekr/utils": "0.1.0",
       },
     },
     "packages/core": {
-      "name": "@checkr/core",
+      "name": "@chekr/core",
       "version": "0.1.0",
       "dependencies": {
-        "@checkr/helpers": "^0.1.0",
-        "@checkr/utils": "^0.1.0",
+        "@chekr/helpers": "^0.1.0",
+        "@chekr/utils": "^0.1.0",
         "ignore": "^7.0.3",
         "simple-git": "^3.27.0",
       },
     },
     "packages/helpers": {
-      "name": "@checkr/helpers",
+      "name": "@chekr/helpers",
       "version": "0.1.0",
     },
     "packages/utils": {
-      "name": "@checkr/utils",
+      "name": "@chekr/utils",
       "version": "0.1.0",
     },
     "types": {
-      "name": "@checkr/types",
+      "name": "@chekr/types",
       "version": "0.1.0",
       "dependencies": {
         "zod": "^3.24.0",
@@ -67,15 +67,15 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.5.1", "", { "os": "win32", "cpu": "x64" }, "sha512-6uxpR9hvaglANkZemeSiN/FhYgkGasrEGn267eXIWvjrjJ2LhDlk251IhjVJq6MXzkV2/bcXwLwSroLyPtqRZg=="],
 
-    "@checkr/cli": ["@checkr/cli@workspace:packages/cli"],
+    "@chekr/cli": ["@chekr/cli@workspace:packages/cli"],
 
-    "@checkr/core": ["@checkr/core@workspace:packages/core"],
+    "@chekr/core": ["@chekr/core@workspace:packages/core"],
 
-    "@checkr/helpers": ["@checkr/helpers@workspace:packages/helpers"],
+    "@chekr/helpers": ["@chekr/helpers@workspace:packages/helpers"],
 
-    "@checkr/types": ["@checkr/types@workspace:types"],
+    "@chekr/types": ["@chekr/types@workspace:types"],
 
-    "@checkr/utils": ["@checkr/utils@workspace:packages/utils"],
+    "@chekr/utils": ["@chekr/utils@workspace:packages/utils"],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.28.1", "", { "os": "aix", "cpu": "ppc64" }, "sha512-Svl7tq8k/08+p6CXPpRjQ1fKX+1odH/BQbb48fV6fj3CWHhsoIOoY87w1oHXm0qEpkIK3ZfVgp0hed3XBXzXMQ=="],
 

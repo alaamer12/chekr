@@ -1,15 +1,15 @@
-# Contributing to checkr
+# Contributing to chekr
 
 ## Repository layout
 
 ```
-checkr/
+chekr/
   packages/
-    helpers/     @checkr/helpers — internal; bundled into CLI
-    utils/       @checkr/utils   — internal; bundled into CLI
-    core/        @checkr/core    — internal; bundled into CLI
-    cli/         @checkr/cli     — published — `checkr` binary
-  types/         @checkr/types   — published — TypeScript + Zod
+    helpers/     @chekr/helpers — internal; bundled into CLI
+    utils/       @chekr/utils   — internal; bundled into CLI
+    core/        @chekr/core    — internal; bundled into CLI
+    cli/         @chekr/cli     — published — `chekr` binary
+  types/         @chekr/types   — published — TypeScript + Zod
   docs/          User + internal documentation
   examples/      minimal + symphony-rules samples
 ```

@@ -1,4 +1,4 @@
-import { normalizePosixPath } from "@checkr/helpers";
+import { normalizePosixPath } from "@chekr/helpers";
 import simpleGit from "simple-git";
 import { buildStatusFingerprint } from "./diff-cache.js";
 

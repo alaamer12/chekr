@@ -1,9 +1,9 @@
-import { ConfigError, validateConfig as validateHelpersConfig } from "@checkr/helpers";
+import { ConfigError, validateConfig as validateHelpersConfig } from "@chekr/helpers";
 
 export { ConfigError };
 
 /**
- * Validate resolved Checkr config (delegates to @checkr/helpers).
+ * Validate resolved Chekr config (delegates to @chekr/helpers).
  * @param {unknown} config
  * @returns {Record<string, unknown>}
  */

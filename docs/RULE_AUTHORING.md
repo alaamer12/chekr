@@ -1,17 +1,17 @@
-# checkr — Rule Authoring Guide
+# chekr — Rule Authoring Guide
 
-Writing checks and fixes for checkr.
+Writing checks and fixes for chekr.
 
-**Types:** `npm install -D @checkr/types` then `/** @type {import('checkr').CheckrConfig} */` in `checkr.config.js`.
+**Types:** `npm install -D @chekr/types` then `/** @type {import('chekr').ChekrConfig} */` in `chekr.config.js`.
 
-**Utilities:** `import { walkFiles, buildIgnoredLines } from '@checkr/utils'` (installed with `@checkr/cli`)
+**Utilities:** `import { walkFiles, buildIgnoredLines } from '@chekr/utils'` (installed with `@chekr/cli`)
 
 ---
 
 ## Anatomy of a check file
 
 ```
-.checkr/checks/
+.chekr/checks/
   check_raw_colors.js      ← filename: check_ prefix + snake_case
   check_raw_sizes.js
   check_box_as_primitive.js
@@ -20,7 +20,7 @@ Writing checks and fixes for checkr.
 ### Minimal check
 
 ```js
-// .checkr/checks/check_raw_colors.js
+// .chekr/checks/check_raw_colors.js
 
 export function checkRawColors(source, filePath) {
   const violations = []
@@ -48,10 +48,10 @@ That's it. A function, a loop, an array. No framework, no AST, no plugin registr
 
 ## Using ignore blocks
 
-checkr respects inline ignore blocks. Use `buildIgnoredLines` from `@checkr/utils` to skip them:
+chekr respects inline ignore blocks. Use `buildIgnoredLines` from `@chekr/utils` to skip them:
 
 ```js
-import { buildIgnoredLines } from '@checkr/utils'
+import { buildIgnoredLines } from '@chekr/utils'
 
 export function checkRawColors(source, filePath) {
   const lines = source.split('\n')
@@ -79,17 +79,17 @@ export function checkRawColors(source, filePath) {
 Ignore blocks in source files:
 
 ```js
-// ---------- @checkr-ignore-start
+// ---------- @chekr-ignore-start
 const color = '#5B8FF9'  // intentional — this line is skipped
-// ---------- @checkr-ignore-end
+// ---------- @chekr-ignore-end
 ```
 
 The dashes are optional decoration. Only the marker keyword matters:
 
 ```js
-// @checkr-ignore-start
+// @chekr-ignore-start
 const color = '#5B8FF9'
-// @checkr-ignore-end
+// @chekr-ignore-end
 ```
 
 ---
@@ -133,7 +133,7 @@ export function checkRawSizes(source, filePath) { ... }
 If you have related checks, put them in separate files:
 
 ```
-.checkr/checks/
+.chekr/checks/
   check_raw_colors.js    ← exports checkRawColors
   check_raw_sizes.js     ← exports checkRawSizes
 ```
@@ -156,7 +156,7 @@ export function checkRawColors(source, filePath) {
 ## Anatomy of a fix file
 
 ```
-.checkr/fixes/
+.chekr/fixes/
   fix_raw_sizes.js      ← filename: fix_ prefix + snake_case
   fix_raw_colors.js
 ```
@@ -164,7 +164,7 @@ export function checkRawColors(source, filePath) {
 ### Minimal fix
 
 ```js
-// .checkr/fixes/fix_raw_sizes.js
+// .chekr/fixes/fix_raw_sizes.js
 
 export function fixRawSizes(source, filePath, violations) {
   let result = source
@@ -181,7 +181,7 @@ export function fixRawSizes(source, filePath, violations) {
 ### Fix with inner args (passed via --)
 
 ```js
-// .checkr/fixes/fix_raw_sizes.js
+// .chekr/fixes/fix_raw_sizes.js
 
 export function fixRawSizes(source, filePath, violations, args = []) {
   const dryRun = args.includes('--dry-run')
@@ -199,7 +199,7 @@ export function fixRawSizes(source, filePath, violations, args = []) {
 
 Called as:
 ```
-checkr fix -- --dry-run --only-jsx
+chekr fix -- --dry-run --only-jsx
 ```
 
 ---
@@ -232,7 +232,7 @@ import {
   walkFiles,         // walk a directory for files
   buildIgnoredLines, // parse ignore blocks
   readFileLines,     // split source into lines
-} from '@checkr/utils'
+} from '@chekr/utils'
 ```
 
 ### `walkFiles(rootDir, extensions, excludePatterns?)`
@@ -336,12 +336,12 @@ if (/rgba\s*\(\s*\d/.test(line)) {
 ## Example: complete check file
 
 ```js
-// .checkr/checks/check_raw_colors.js
+// .chekr/checks/check_raw_colors.js
 //
 // Detects raw hex/rgba/hsl color strings in component files.
 // These should use design tokens instead.
 
-import { buildIgnoredLines } from '@checkr/utils'
+import { buildIgnoredLines } from '@chekr/utils'
 
 const VIOLATIONS = [
   {

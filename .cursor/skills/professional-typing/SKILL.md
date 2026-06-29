@@ -3,7 +3,7 @@ name: professional-typing
 description: >-
   Converts plain string/boolean config and API types into a professional typing
   system with semantic aliases, JSDoc, runtime validation, and tests. Use when
-  the user asks for better types, PathLike, checkr.config.d.ts, Zod schema,
+  the user asks for better types, PathLike, chekr.config.d.ts, Zod schema,
   validateConfig, or professional typing for configs and public APIs.
 ---
 
@@ -43,7 +43,7 @@ Turn **basic `string` / `boolean` fields** into a **documented, validated type s
 - [ ] 2. Name primitives — PathLike, GlobPattern, PositiveInt, etc. (see reference.md)
 - [ ] 3. Write declare module or package .d.ts with JSDoc + composed interfaces
 - [ ] 4. Add CliConfigPatch / Resolved* types if config is layered
-- [ ] 5. Mirror runtime validation in @checkr/helpers validateConfig (or equivalent)
+- [ ] 5. Mirror runtime validation in @chekr/helpers validateConfig (or equivalent)
 - [ ] 6. Add schema.zod.js (or Zod .ts) + tests in types package
 - [ ] 7. Add typecheck script: tsc -p types/tsconfig.json
 - [ ] 8. Document usage: /** @type {import('…').Config} */
@@ -55,7 +55,7 @@ Turn **basic `string` / `boolean` fields** into a **documented, validated type s
 
 ```
 types/
-  checkr.config.d.ts    # declare module "…" — user-facing
+  chekr.config.d.ts    # declare module "…" — user-facing
   primitives.d.ts         # optional re-exports
   schema.zod.js           # Zod mirror (dev / publish as optional export)
   package.json            # @scope/types
@@ -105,7 +105,7 @@ Throw `ConfigError` with `path` field for every failure (field path like `steps[
 import { z } from "zod";
 
 const checkId = z.string().regex(/^check_[a-z][a-z0-9_]*$/);
-export const checkrConfigSchema = z.object({
+export const chekrConfigSchema = z.object({
   checksDir: z.string().min(1).optional(),
   scanMode: z.enum(["full", "changed", "staged"]).optional(),
   steps: z.array(z.object({ id: checkId })).optional(),
@@ -128,7 +128,7 @@ Otherwise document typia as optional in README; ship Zod for CI.
 
 ## Before / after
 
-See [examples.md](examples.md) for full before/after on checkr config.
+See [examples.md](examples.md) for full before/after on chekr config.
 
 ---
 
@@ -146,5 +146,5 @@ See [examples.md](examples.md) for full before/after on checkr config.
 ## Additional resources
 
 - [reference.md](reference.md) — primitive catalog, layering diagram
-- [examples.md](examples.md) — checkr.config before/after
-- Live reference: `types/checkr.config.d.ts`, `types/schema.zod.js`
+- [examples.md](examples.md) — chekr.config before/after
+- Live reference: `types/chekr.config.d.ts`, `types/schema.zod.js`

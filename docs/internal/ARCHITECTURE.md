@@ -1,4 +1,4 @@
-# checkr — Architecture
+# chekr — Architecture
 
 **Version:** 1.0  
 **Status:** Draft
@@ -8,25 +8,25 @@
 ## 1. Package Structure
 
 ```
-@checkr/core     ← engine (no CLI, no I/O assumptions)
-@checkr/cli      ← CLI wrapper, process.exit, stdout/stderr
-@checkr/utils    ← utilities for rule authors
+@chekr/core     ← engine (no CLI, no I/O assumptions)
+@chekr/cli      ← CLI wrapper, process.exit, stdout/stderr
+@chekr/utils    ← utilities for rule authors
 ```
 
-Separation rationale: `@checkr/core` can be embedded in editors, CI systems, or other tools without pulling in CLI dependencies. `@checkr/cli` is the thin shell that wires core to a terminal.
+Separation rationale: `@chekr/core` can be embedded in editors, CI systems, or other tools without pulling in CLI dependencies. `@chekr/cli` is the thin shell that wires core to a terminal.
 
 ---
 
 ## 2. Core Engine — Data Flow
 
 ```
-checkr run
+chekr run
   │
-  ├─ 1. Load config (checkr.config.js or defaults)
+  ├─ 1. Load config (chekr.config.js or defaults)
   │
   ├─ 2. Discover + validate rule files
-  │       .checkr/checks/check_*.js → load + validate exports
-  │       .checkr/fixes/fix_*.js    → load + validate exports (if --fix)
+  │       .chekr/checks/check_*.js → load + validate exports
+  │       .chekr/fixes/fix_*.js    → load + validate exports (if --fix)
   │
   ├─ 3. Resolve file list
   │       --changed  → git diff --name-only HEAD
@@ -52,7 +52,7 @@ checkr run
 
 ## 3. Module Breakdown
 
-### `@checkr/core`
+### `@chekr/core`
 
 ```
 src/
@@ -66,7 +66,7 @@ src/
   index.js           ← public API
 ```
 
-### `@checkr/cli`
+### `@chekr/cli`
 
 ```
 src/
@@ -80,7 +80,7 @@ src/
     validate.js
 ```
 
-### `@checkr/utils`
+### `@chekr/utils`
 
 ```
 src/
@@ -97,7 +97,7 @@ src/
 ```js
 // Discovery
 const files = glob('check_*.js', { cwd: config.checksDir })
-// config.checksDir defaults to '.checkr/checks'
+// config.checksDir defaults to '.chekr/checks'
 
 // Validation per file
 for (const file of files) {
@@ -117,7 +117,7 @@ Expected: export function checkXxx(source, filePath) { ... }`)
   }
 
   // Derive step id from filename
-  // .checkr/checks/check_raw_colors.js → 'check_raw_colors'
+  // .chekr/checks/check_raw_colors.js → 'check_raw_colors'
   const id = path.basename(file, '.js')
   const [[, fn]] = checkFns
 
@@ -188,10 +188,10 @@ for (const step of orderedSteps) {
 
 ## 6. Caching — `cache.js`
 
-Cache key: `sha256(fileContent) + sha256(ruleFnSource) + checkrVersion`
+Cache key: `sha256(fileContent) + sha256(ruleFnSource) + chekrVersion`
 
 ```
-.checkr-cache/
+.chekr-cache/
   <sha256-of-key>.json    ← { violations: Violation[], timestamp: number }
 ```
 
@@ -227,15 +227,15 @@ async function getChangedFiles(mode) {
 The `--` separator passes inner arguments to the fixer being invoked:
 
 ```
-checkr fix -- --dry-run --verbose
-checkr fix fix_raw_sizes -- --only-jsx --path src/
+chekr fix -- --dry-run --verbose
+chekr fix fix_raw_sizes -- --only-jsx --path src/
 ```
 
 Parsing:
 
 ```js
 const separatorIdx = process.argv.indexOf('--')
-const checkrArgs = separatorIdx === -1
+const chekrArgs = separatorIdx === -1
   ? process.argv.slice(2)
   : process.argv.slice(2, separatorIdx)
 
@@ -261,11 +261,11 @@ export function fixRawSizes(source, filePath, violations, args = []) {
 ## 9. Watch Mode — `watch.js`
 
 ```
-checkr watch
+chekr watch
   │
   ├─ Initial full run
   │
-  └─ fs.watch on .checkr/checks/ + include patterns
+  └─ fs.watch on .chekr/checks/ + include patterns
        On file change:
          Re-read changed file
          Run all checks against that file only
@@ -277,14 +277,14 @@ Watch mode never exits. Ctrl+C to stop.
 
 ---
 
-## 10. Public API — `@checkr/core`
+## 10. Public API — `@chekr/core`
 
 ```js
-import { run, fix, validate, loadConfig } from '@checkr/core'
+import { run, fix, validate, loadConfig } from '@chekr/core'
 
 // Programmatic usage
 const result = await run({
-  config: './checkr.config.js',
+  config: './chekr.config.js',
   changed: true,
   bail: false,
 })
@@ -294,16 +294,16 @@ console.log(result.violations)    // Violation[]
 console.log(result.steps)         // StepResult[]
 ```
 
-This allows embedding checkr in editors, CI scripts, or other tools without going through the CLI.
+This allows embedding chekr in editors, CI scripts, or other tools without going through the CLI.
 
 ---
 
 ## 11. Dependency Philosophy
 
-`@checkr/core` has zero runtime dependencies beyond Node.js built-ins. The only optional dependency is `fast-glob` for file walking.
+`@chekr/core` has zero runtime dependencies beyond Node.js built-ins. The only optional dependency is `fast-glob` for file walking.
 
-`@checkr/cli` depends on `@checkr/core` and a minimal arg parser.
+`@chekr/cli` depends on `@chekr/core` and a minimal arg parser.
 
-`@checkr/utils` has zero dependencies.
+`@chekr/utils` has zero dependencies.
 
 Rule files can depend on anything — that's the rule author's concern, not the engine's.

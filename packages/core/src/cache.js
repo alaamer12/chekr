@@ -1,4 +1,4 @@
-import { toAbsolute } from "@checkr/helpers";
+import { toAbsolute } from "@chekr/helpers";
 import {
   clearCacheDir,
   getBranchCacheMeta,

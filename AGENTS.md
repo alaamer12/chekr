@@ -53,7 +53,7 @@ When the user says **`up-agents`**, **`up-agents 4 + 1`**, or **`/up-agents`**, 
 | `up-agents 3 + 1 @600` | 3 workers + reviewer wakes at 600s |
 | `/up-agents 4 + 1 {task}` | Same via slash command (see `.cursor/commands/up-agents.md`) |
 
-Launch all **N+1** subagents in one message. Workers sleep before work; reviewer runs last. Checkr scope split: `.cursor/skills/up-agents/reference.md`.
+Launch all **N+1** subagents in one message. Workers sleep before work; reviewer runs last. Chekr scope split: `.cursor/skills/up-agents/reference.md`.
 
 ---
 

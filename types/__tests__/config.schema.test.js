@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { checkrConfigSchema } from "../schema.zod.js";
+import { chekrConfigSchema } from "../schema.zod.js";
 
-describe("checkrConfigSchema (zod)", () => {
+describe("chekrConfigSchema (zod)", () => {
   it("accepts a valid config shape", () => {
-    const result = checkrConfigSchema.safeParse({
-      checksDir: "./.checkr/checks",
+    const result = chekrConfigSchema.safeParse({
+      checksDir: "./.chekr/checks",
       gitignore: ".gitignore",
       scanMode: "full",
       reporter: "json",
@@ -16,29 +16,29 @@ describe("checkrConfigSchema (zod)", () => {
   });
 
   it("rejects invalid reporter", () => {
-    const result = checkrConfigSchema.safeParse({ reporter: "verbose" });
+    const result = chekrConfigSchema.safeParse({ reporter: "verbose" });
     expect(result.success).toBe(false);
   });
 
   it("rejects non-object config", () => {
-    expect(checkrConfigSchema.safeParse(null).success).toBe(false);
+    expect(chekrConfigSchema.safeParse(null).success).toBe(false);
   });
 
   it("rejects invalid scanMode", () => {
-    expect(checkrConfigSchema.safeParse({ scanMode: "partial" }).success).toBe(
+    expect(chekrConfigSchema.safeParse({ scanMode: "partial" }).success).toBe(
       false,
     );
   });
 
   it("rejects invalid check id pattern", () => {
-    const result = checkrConfigSchema.safeParse({
+    const result = chekrConfigSchema.safeParse({
       steps: [{ id: "raw_colors" }],
     });
     expect(result.success).toBe(false);
   });
 
   it("rejects camelCase check id", () => {
-    const result = checkrConfigSchema.safeParse({
+    const result = chekrConfigSchema.safeParse({
       steps: [{ id: "check_RawColors" }],
     });
     expect(result.success).toBe(false);

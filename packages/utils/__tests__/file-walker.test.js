@@ -25,7 +25,7 @@ import { walkFiles } from "../src/file-walker.js";
 const PACKAGE_DIR = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const REPO_ROOT = path.resolve(PACKAGE_DIR, "../..");
 const UTILS_SRC_DIR = path.join(PACKAGE_DIR, "src");
-const CHECKS_DIR = path.join(REPO_ROOT, "packages/core/__fixtures__/minimal/.checkr/checks");
+const CHECKS_DIR = path.join(REPO_ROOT, "packages/core/__fixtures__/minimal/.chekr/checks");
 const FIXTURE_ROOT = path.join(REPO_ROOT, "packages/core/__fixtures__/minimal");
 
 function cwdRelative(absPath) {

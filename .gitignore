@@ -6,8 +6,8 @@
 .AppleDouble
 .LSOverride
 ._*
-**/.checkr-cache/*
-**/.checkr/*
+**/.chekr-cache/*
+**/.chekr/*
 
 # Windows
 Thumbs.db

@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { normalizePosixPath, toAbsolute } from "@checkr/helpers";
+import { normalizePosixPath, toAbsolute } from "@chekr/helpers";
 import ignore from "ignore";
 
 /**

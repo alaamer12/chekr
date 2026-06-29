@@ -24,26 +24,26 @@ export function checkExample(source, filePath) {
 `;
 
 const FIX_TEMPLATE = `/**
- * Example fixer — dry-run by default when invoked via \`checkr fix\`.
+ * Example fixer — dry-run by default when invoked via \`chekr fix\`.
  */
 export function fixExample(source, filePath, violations) {
   return source;
 }
 `;
 
-const CONFIG_TEMPLATE = `/** @type {import('checkr').CheckrConfig} */
+const CONFIG_TEMPLATE = `/** @type {import('chekr').ChekrConfig} */
 export default {
-  checksDir: "./.checkr/checks",
-  fixesDir: "./.checkr/fixes",
+  checksDir: "./.chekr/checks",
+  fixesDir: "./.chekr/fixes",
   include: ["**/*.{js,jsx,ts,tsx}"],
   gitignore: ".gitignore",
   bail: true,
   parallel: true,
   concurrency: 4,
-  ignoreMarker: "@checkr-ignore",
+  ignoreMarker: "@chekr-ignore",
   reporter: "default",
   cache: true,
-  cacheDir: ".checkr-cache",
+  cacheDir: ".chekr-cache",
 };
 `;
 
@@ -53,18 +53,18 @@ export default {
  * @param {string} cwd
  */
 export async function initCommand(_flags, _positionals, cwd) {
-  const checksDir = path.join(cwd, ".checkr", "checks");
-  const fixesDir = path.join(cwd, ".checkr", "fixes");
+  const checksDir = path.join(cwd, ".chekr", "checks");
+  const fixesDir = path.join(cwd, ".chekr", "fixes");
 
   await mkdir(checksDir, { recursive: true });
   await mkdir(fixesDir, { recursive: true });
 
   await writeFile(path.join(checksDir, "check_example.js"), CHECK_TEMPLATE);
   await writeFile(path.join(fixesDir, "fix_example.js"), FIX_TEMPLATE);
-  await writeFile(path.join(cwd, "checkr.config.js"), CONFIG_TEMPLATE);
+  await writeFile(path.join(cwd, "chekr.config.js"), CONFIG_TEMPLATE);
 
   console.log("Created:");
-  console.log("  .checkr/checks/check_example.js");
-  console.log("  .checkr/fixes/fix_example.js");
-  console.log("  checkr.config.js");
+  console.log("  .chekr/checks/check_example.js");
+  console.log("  .chekr/fixes/fix_example.js");
+  console.log("  chekr.config.js");
 }

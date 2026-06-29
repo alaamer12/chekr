@@ -1,5 +1,5 @@
 /**
- * Zod runtime schema mirroring `checkr.config.d.ts` (dev validation only).
+ * Zod runtime schema mirroring `chekr.config.d.ts` (dev validation only).
  */
 
 import { z } from "zod";
@@ -34,7 +34,7 @@ export const stepConfigSchema = z.object({
   options: z.record(z.unknown()).optional(),
 });
 
-export const checkrConfigSchema = z.object({
+export const chekrConfigSchema = z.object({
   checksDir: pathLike.optional(),
   fixesDir: pathLike.optional(),
   include: z.array(globPattern).optional(),
@@ -61,7 +61,7 @@ export const cliConfigPatchSchema = z.object({
   concurrency: positiveInt.optional(),
 });
 
-/** @typedef {z.infer<typeof checkrConfigSchema>} CheckrConfigInput */
+/** @typedef {z.infer<typeof chekrConfigSchema>} ChekrConfigInput */
 /** @typedef {z.infer<typeof stepConfigSchema>} StepConfigInput */
 
 export { checkId, fixId, pathLike, globPattern };

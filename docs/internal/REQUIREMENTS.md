@@ -1,4 +1,4 @@
-# checkr — Requirements Specification
+# chekr — Requirements Specification
 
 **Version:** 1.0  
 **Status:** Draft  
@@ -21,20 +21,20 @@ Writing these rules in the ESLint ecosystem requires significant boilerplate (AS
 
 ### 1.2 Solution
 
-checkr is a standalone pipeline tool that:
+chekr is a standalone pipeline tool that:
 
-1. Discovers and loads project-defined rule files from a `.checkr/checks/` directory
+1. Discovers and loads project-defined rule files from a `.chekr/checks/` directory
 2. Scans source files (all or git-diff subset) against those rules
 3. Reports violations with file, line, message, and fix hint
-4. Optionally applies auto-fixes via corresponding `.checkr/fixes/` files
+4. Optionally applies auto-fixes via corresponding `.chekr/fixes/` files
 5. Exits with code 0 (pass) or 1 (fail) for CI integration
 
 ### 1.3 Non-Goals
 
-- checkr does **not** replace ESLint, Prettier, or TypeScript
-- checkr does **not** perform AST-level analysis (rules operate on source strings)
-- checkr does **not** enforce code style or formatting
-- checkr does **not** run tests
+- chekr does **not** replace ESLint, Prettier, or TypeScript
+- chekr does **not** perform AST-level analysis (rules operate on source strings)
+- chekr does **not** enforce code style or formatting
+- chekr does **not** run tests
 
 ---
 
@@ -42,7 +42,7 @@ checkr is a standalone pipeline tool that:
 
 ### 2.1 Rule Discovery
 
-**FR-01** — The engine MUST auto-discover rule files in the configured `checksDir` (default: `./.checkr/checks`).
+**FR-01** — The engine MUST auto-discover rule files in the configured `checksDir` (default: `./.chekr/checks`).
 
 **FR-02** — Rule files MUST be named with the prefix `check_` followed by a snake_case identifier. Example: `check_raw_colors.js`.
 
@@ -99,25 +99,25 @@ function fixXxx(source: string, filePath: string, violations: Violation[]): stri
 
 ### 2.3 Configuration
 
-**FR-14** — checkr MUST operate in zero-config mode when no config file is present, using these defaults:
+**FR-14** — chekr MUST operate in zero-config mode when no config file is present, using these defaults:
 ```
-checksDir:    ./.checkr/checks
-fixesDir:     ./.checkr/fixes
+checksDir:    ./.chekr/checks
+fixesDir:     ./.chekr/fixes
 include:      **/*.{ts,tsx,js,jsx}
 exclude:      **/node_modules/**, **/*.stories.*, **/*.test.*, **/*.spec.*
 bail:         true
-ignoreMarker: @checkr-ignore
+ignoreMarker: @chekr-ignore
 ```
 
-**FR-15** — checkr MUST support a config file named `checkr.config.js` (or `checkr.config.ts`) in the project root.
+**FR-15** — chekr MUST support a config file named `chekr.config.js` (or `chekr.config.ts`) in the project root.
 
 **FR-16** — The config file MUST support the following options:
 
 ```ts
-interface CheckrConfig {
+interface ChekrConfig {
   // Directories
-  checksDir?: string           // default: './.checkr/checks'
-  fixesDir?: string            // default: './.checkr/fixes'
+  checksDir?: string           // default: './.chekr/checks'
+  fixesDir?: string            // default: './.chekr/fixes'
 
   // File scanning
   include?: string[]           // glob patterns to include
@@ -137,7 +137,7 @@ interface CheckrConfig {
   }>
 
   // Ignore block marker
-  ignoreMarker?: string        // default: '@checkr-ignore'
+  ignoreMarker?: string        // default: '@chekr-ignore'
 
   // Reporting
   reporter?: 'default' | 'json' | 'compact' | 'html'
@@ -153,9 +153,9 @@ interface CheckrConfig {
 
 **FR-19** — The engine MUST support inline ignore blocks in source files:
 ```js
-// ---------- @checkr-ignore-start
+// ---------- @chekr-ignore-start
 // code here is excluded from all checks
-// ---------- @checkr-ignore-end
+// ---------- @chekr-ignore-end
 ```
 
 **FR-20** — Ignored lines MUST be excluded from all rule checks.
@@ -190,12 +190,12 @@ interface CheckrConfig {
 
 **FR-29** — The engine MUST support result caching keyed on `hash(fileContent) + hash(checkerVersion)`.
 
-**FR-30** — Cache MUST be stored in `.checkr-cache/` by default (configurable).
+**FR-30** — Cache MUST be stored in `.chekr-cache/` by default (configurable).
 
 **FR-31** — Cache MUST be invalidated when:
 - File content changes
 - The check function source changes
-- The checkr version changes
+- The chekr version changes
 - `--no-cache` flag is passed
 
 **FR-32** — Cache MUST be safe to commit to `.gitignore` (binary-safe, deterministic).
@@ -205,12 +205,12 @@ interface CheckrConfig {
 **FR-33** — The CLI MUST support the following commands:
 
 ```
-checkr run              Run all checks
-checkr fix              Run all fixers
-checkr watch            Watch mode — re-run on file change
-checkr init             Scaffold checks/ and fixes/ directories with examples
-checkr list             List all discovered checks and their status
-checkr validate         Validate all check/fix files without running them
+chekr run              Run all checks
+chekr fix              Run all fixers
+chekr watch            Watch mode — re-run on file change
+chekr init             Scaffold checks/ and fixes/ directories with examples
+chekr list             List all discovered checks and their status
+chekr validate         Validate all check/fix files without running them
 ```
 
 **FR-34** — The CLI MUST support the following global flags:
@@ -231,8 +231,8 @@ checkr validate         Validate all check/fix files without running them
 
 **FR-35** — The CLI MUST support passing inner parameters to individual fixers using the `--` separator:
 ```
-checkr fix -- --dry-run --verbose
-checkr fix fix_raw_sizes -- --only-jsx
+chekr fix -- --dry-run --verbose
+chekr fix fix_raw_sizes -- --only-jsx
 ```
 
 **FR-36** — The CLI MUST exit with code `0` when all checks pass and code `1` when any check fails.
@@ -284,14 +284,14 @@ src/components/Button.tsx:42 [check_raw_sizes] Raw px value "16px"
 
 ### 2.10 Utilities for Rule Authors
 
-**FR-40** — checkr MUST provide the following utilities importable from `@checkr/utils`:
+**FR-40** — chekr MUST provide the following utilities importable from `@chekr/utils`:
 
 ```js
 import {
   walkFiles,           // recursive file walker with glob support
-  buildIgnoredLines,   // parse @checkr-ignore blocks → Set<lineNumber>
+  buildIgnoredLines,   // parse @chekr-ignore blocks → Set<lineNumber>
   readFileLines,       // split source into lines array
-} from '@checkr/utils'
+} from '@chekr/utils'
 ```
 
 **FR-41** — `walkFiles(rootDir, extensions, excludePatterns)` MUST return an array of absolute file paths.
@@ -312,17 +312,17 @@ import {
 
 ### 3.2 Compatibility
 
-**NFR-04** — checkr MUST run on Node.js 18+ and Bun 1.0+.
+**NFR-04** — chekr MUST run on Node.js 18+ and Bun 1.0+.
 
 **NFR-05** — Rule files MUST be plain ES modules (`.js` or `.ts` with `"type": "module"`).
 
-**NFR-06** — checkr MUST work on macOS, Linux, and Windows.
+**NFR-06** — chekr MUST work on macOS, Linux, and Windows.
 
 ### 3.3 Developer Experience
 
 **NFR-07** — Error messages for invalid rule files MUST include the expected function signature.
 
-**NFR-08** — `checkr init` MUST generate a working example check and fix file.
+**NFR-08** — `chekr init` MUST generate a working example check and fix file.
 
 **NFR-09** — The engine MUST print a startup summary listing all loaded checks before running.
 
@@ -351,6 +351,6 @@ import {
 | **Violation** | A single instance of a rule being broken, with file/line/message |
 | **Fixer** | A fix function that transforms source to remove violations |
 | **Step** | A named execution unit — one check file = one step |
-| **Pipeline** | The ordered sequence of steps run by `checkr run` |
+| **Pipeline** | The ordered sequence of steps run by `chekr run` |
 | **Ignore block** | Source annotation that excludes lines from all checks |
 | **Design contract** | The set of rules that define valid AI output for a project |

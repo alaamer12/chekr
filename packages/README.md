@@ -1,25 +1,25 @@
-# checkr packages
+# chekr packages
 
 ## Published to npm
 
 | Package | Description |
 |---------|-------------|
-| `@checkr/cli` | `checkr` binary; bundles engine + internal utilities |
-| `@checkr/types` | TypeScript definitions and Zod config schema |
+| `@chekr/cli` | `chekr` binary; bundles engine + internal utilities |
+| `@chekr/types` | TypeScript definitions and Zod config schema |
 
 ```bash
-npm install -D @checkr/cli @checkr/types
+npm install -D @chekr/cli @chekr/types
 ```
 
 ## Internal (monorepo only)
 
-These are **not** published separately. They ship inside `@checkr/cli` via `bundledDependencies`:
+These are **not** published separately. They ship inside `@chekr/cli` via `bundledDependencies`:
 
 | Package | Role |
 |---------|------|
-| `@checkr/helpers` | Config parse/merge, naming, paths |
-| `@checkr/utils` | File walker, ignore blocks, terminal colors |
-| `@checkr/core` | Engine — discover rules, scan, report |
+| `@chekr/helpers` | Config parse/merge, naming, paths |
+| `@chekr/utils` | File walker, ignore blocks, terminal colors |
+| `@chekr/core` | Engine — discover rules, scan, report |
 
 ## Development
 

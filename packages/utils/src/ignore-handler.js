@@ -6,8 +6,8 @@
  * breaking single-line directives. The block form is immune.
  *
  * Supports both JavaScript and JSX comment styles:
- *   // @checkr-ignore-start
- *   {/* @checkr-ignore-start *\/}
+ *   // @chekr-ignore-start
+ *   {/* @chekr-ignore-start *\/}
  *
  * Edge cases handled:
  *   - Directives inline with code (line is suppressed)
@@ -53,7 +53,7 @@ function hasCodeBeyondDirective(line, startMarker, endMarker) {
  * @param {{ marker?: string }} [options]
  * @returns {Set<number>} 1-indexed line numbers that are suppressed
  */
-export function buildIgnoredLines(lines, { marker = "@checkr-ignore" } = {}) {
+export function buildIgnoredLines(lines, { marker = "@chekr-ignore" } = {}) {
   const startMarker = `${marker}-start`;
   const endMarker = `${marker}-end`;
   const ignored = new Set();

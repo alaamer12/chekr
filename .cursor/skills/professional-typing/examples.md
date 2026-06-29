@@ -1,12 +1,12 @@
 # professional-typing — Examples
 
-## Example 1: Config (checkr)
+## Example 1: Config (chekr)
 
 ### Before
 
 ```ts
-declare module "checkr" {
-  export interface CheckrConfig {
+declare module "chekr" {
+  export interface ChekrConfig {
     checksDir?: string;
     gitignore?: string | null;
     steps?: { id: string; step?: number }[];
@@ -17,7 +17,7 @@ declare module "checkr" {
 ### After
 
 ```ts
-declare module "checkr" {
+declare module "chekr" {
   export type PathLike = string;
   export type GitignorePath = PathLike | null;
   export type CheckId = `check_${string}`;
@@ -30,7 +30,7 @@ declare module "checkr" {
     gitignore?: GitignorePath;
   }
 
-  export interface CheckrConfig {
+  export interface ChekrConfig {
     checksDir?: PathLike;
     gitignore?: GitignorePath;
     scanMode?: ScanMode;
@@ -42,9 +42,9 @@ declare module "checkr" {
 ### User config
 
 ```js
-/** @type {import('checkr').CheckrConfig} */
+/** @type {import('chekr').ChekrConfig} */
 export default {
-  checksDir: "./.checkr/checks",
+  checksDir: "./.chekr/checks",
   gitignore: ".gitignore",
   steps: [{ id: "check_raw_colors", step: 1 }],
 };
@@ -96,7 +96,7 @@ interface RunResult {
 
 ## Example 3: Adding a new config field
 
-1. Add to `CheckrConfig` in `.d.ts` with semantic type
+1. Add to `ChekrConfig` in `.d.ts` with semantic type
 2. Add to `ENGINE_DEFAULTS` in core
 3. Add validation in `validate-config.js`
 4. Add to `schema.zod.js` + test case

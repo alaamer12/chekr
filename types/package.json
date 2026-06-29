@@ -1,10 +1,10 @@
 {
-  "name": "@checkr/types",
+  "name": "@chekr/types",
   "version": "0.1.0",
-  "description": "TypeScript definitions and Zod schema for checkr configuration",
+  "description": "TypeScript definitions and Zod schema for chekr configuration",
   "license": "MIT",
   "type": "module",
-  "author": "checkr contributors",
+  "author": "chekr contributors",
   "engines": {
     "node": ">=18"
   },
@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/alaamer12/chekr/tree/main/types#readme",
   "keywords": [
-    "checkr",
+    "chekr",
     "typescript",
     "types",
     "config",
@@ -27,9 +27,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "types": "./checkr.config.d.ts",
+  "types": "./chekr.config.d.ts",
   "exports": {
-    ".": "./checkr.config.d.ts",
+    ".": "./chekr.config.d.ts",
     "./primitives": "./primitives.d.ts",
     "./schema": "./schema.zod.js"
   },
@@ -37,7 +37,7 @@
     "zod": "^3.24.0"
   },
   "files": [
-    "checkr.config.d.ts",
+    "chekr.config.d.ts",
     "primitives.d.ts",
     "schema.zod.js",
     "README.md"

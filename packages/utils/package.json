@@ -1,10 +1,10 @@
 {
-  "name": "@checkr/utils",
+  "name": "@chekr/utils",
   "version": "0.1.0",
-  "description": "File walking, ignore blocks, and terminal helpers for checkr rule authors",
+  "description": "File walking, ignore blocks, and terminal helpers for chekr rule authors",
   "license": "MIT",
   "type": "module",
-  "author": "checkr contributors",
+  "author": "chekr contributors",
   "engines": {
     "node": ">=18"
   },
@@ -19,7 +19,7 @@
   "homepage": "https://github.com/alaamer12/chekr/tree/main/packages/utils#readme",
   "private": true,
   "keywords": [
-    "checkr",
+    "chekr",
     "file-walker",
     "gitignore",
     "ignore",

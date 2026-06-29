@@ -14,16 +14,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(path.join(__dirname, "..", "package.json"), "utf8"));
 
 function printHelp() {
-  console.log(`checkr v${pkg.version} — project rule runner
+  console.log(`chekr v${pkg.version} — project rule runner
 
 Usage:
-  checkr [command] [options] [path]
+  chekr [command] [options] [path]
 
 Commands:
   run        Run checks (default)
   list       List discovered checks
   validate   Validate check/fix file contracts
-  init       Scaffold .checkr/ and checkr.config.js
+  init       Scaffold .chekr/ and chekr.config.js
   fix        Run fixers (not yet implemented)
 
 Options:

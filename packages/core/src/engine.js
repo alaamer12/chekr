@@ -5,7 +5,7 @@ import { report } from "./reporter/index.js";
 import { runSteps } from "./runner.js";
 
 /**
- * Run the checkr engine.
+ * Run the chekr engine.
  * @param {Record<string, unknown>} [inputConfig]
  * @returns {Promise<{ passed: boolean, violations: unknown[], steps: unknown[], meta: Record<string, unknown> }>}
  */
@@ -26,7 +26,7 @@ export async function run(inputConfig = {}) {
   const { configPath, loadFileConfig, ...cliPatch } = inputConfig;
   const globalConfig = resolveConfig(fileConfig, cliPatch, { cwd });
 
-  const checksDir = /** @type {string} */ (globalConfig.checksDir) ?? "./.checkr/checks";
+  const checksDir = /** @type {string} */ (globalConfig.checksDir) ?? "./.chekr/checks";
   const checks = await loadChecks(checksDir, cwd);
   const ordered = resolveStepOrder(checks, globalConfig);
 

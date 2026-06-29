@@ -1,19 +1,19 @@
 /**
- * Configuration types for checkr user projects.
+ * Configuration types for chekr user projects.
  *
- * @example checkr.config.js
+ * @example chekr.config.js
  * ```js
  * // @ts-check
- * /** @type {import('checkr').CheckrConfig} *\/
+ * /** @type {import('chekr').ChekrConfig} *\/
  * export default {
- *   checksDir: "./.checkr/checks",
+ *   checksDir: "./.chekr/checks",
  *   gitignore: ".gitignore",
  *   steps: [{ id: "check_raw_colors", step: 1 }],
  * };
  * ```
  */
 
-declare module "checkr" {
+declare module "chekr" {
   // ── Primitives ─────────────────────────────────────────────────────────────
 
   /** Positive integer ≥ 1 (step order, concurrency). */
@@ -56,7 +56,7 @@ declare module "checkr" {
 
   // ── Config ─────────────────────────────────────────────────────────────────
 
-  /** Per-step overrides; unset fields inherit from {@link CheckrConfig}. */
+  /** Per-step overrides; unset fields inherit from {@link ChekrConfig}. */
   export interface StepConfig {
     id: CheckId;
     step?: PositiveInt;
@@ -73,8 +73,8 @@ declare module "checkr" {
     options?: StepOptions;
   }
 
-  /** Loaded from `checkr.config.js` at project root. */
-  export interface CheckrConfig {
+  /** Loaded from `chekr.config.js` at project root. */
+  export interface ChekrConfig {
     checksDir?: PathLike;
     fixesDir?: PathLike;
     include?: GlobPattern[];
@@ -120,10 +120,10 @@ declare module "checkr" {
   }
 
   /** After defaults + file + CLI merge. */
-  export interface ResolvedCheckrConfig
+  export interface ResolvedChekrConfig
     extends Required<
       Pick<
-        CheckrConfig,
+        ChekrConfig,
         | "checksDir"
         | "fixesDir"
         | "include"
@@ -156,6 +156,6 @@ declare module "checkr" {
     ignoreMarker: IgnoreMarker;
     options: StepOptions;
     cwd: PathLike;
-    stepConfig: StepConfig & CheckrConfig;
+    stepConfig: StepConfig & ChekrConfig;
   }
 }

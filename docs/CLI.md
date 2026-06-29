@@ -1,11 +1,11 @@
-# checkr — CLI Reference (v2)
+# chekr — CLI Reference (v2)
 
 ---
 
 ## Installation
 
 ```bash
-bun add -D @checkr/cli
+bun add -D @chekr/cli
 # or link from monorepo: bun ../../packages/cli/src/index.js
 ```
 
@@ -13,18 +13,18 @@ bun add -D @checkr/cli
 
 ## Commands
 
-### `checkr run`
+### `chekr run`
 
 Run all checks against source files.
 
 ```bash
-checkr run
-checkr run --changed
-checkr run --staged
-checkr run --no-bail
-checkr run --reporter json
-checkr run --report ./report.json
-checkr run src/
+chekr run
+chekr run --changed
+chekr run --staged
+chekr run --no-bail
+chekr run --reporter json
+chekr run --report ./report.json
+chekr run src/
 ```
 
 **Flags:**
@@ -58,37 +58,37 @@ checkr run src/
 
 ---
 
-### `checkr list`
+### `chekr list`
 
 List discovered checks.
 
 ```bash
-checkr list
+chekr list
 ```
 
 ---
 
-### `checkr validate`
+### `chekr validate`
 
 Validate check/fix file naming and exports without running checks.
 
 ```bash
-checkr validate
+chekr validate
 ```
 
 ---
 
-### `checkr init`
+### `chekr init`
 
-Scaffold `.checkr/checks`, `.checkr/fixes`, and `checkr.config.js`.
+Scaffold `.chekr/checks`, `.chekr/fixes`, and `chekr.config.js`.
 
 ```bash
-checkr init
+chekr init
 ```
 
 ---
 
-### `checkr fix`
+### `chekr fix`
 
 Not yet implemented (post-MVP).
 
@@ -107,14 +107,14 @@ Not yet implemented (post-MVP).
 
 ```bash
 # Run all checks
-checkr run
+chekr run
 
 # Only changed files
-checkr run --changed
+chekr run --changed
 
 # JSON for CI
-checkr run --reporter json --report ./checkr-report.json
+chekr run --reporter json --report ./chekr-report.json
 
 # Pre-commit hook
-checkr run --staged
+chekr run --staged
 ```

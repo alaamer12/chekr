@@ -1,9 +1,9 @@
-# @checkr/utils
+# @chekr/utils
 
-**Internal monorepo package** — not published to npm separately. Shipped inside `@checkr/cli` via `bundledDependencies`.
+**Internal monorepo package** — not published to npm separately. Shipped inside `@chekr/cli` via `bundledDependencies`.
 
-Rule authors import from `@checkr/utils` after installing `@checkr/cli`:
+Rule authors import from `@chekr/utils` after installing `@chekr/cli`:
 
 ```js
-import { walkFiles, buildIgnoredLines } from "@checkr/utils";
+import { walkFiles, buildIgnoredLines } from "@chekr/utils";
 ```

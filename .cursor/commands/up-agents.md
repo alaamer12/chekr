@@ -39,7 +39,7 @@ Launch **N worker subagents** with staggered sleeps, plus **1 reviewer** that st
 
 1. Read `.cursor/skills/up-agents/SKILL.md`
 2. Parse N, @R, stagger@S, and task from user input
-3. Split task into N non-overlapping scopes (checkr defaults in `reference.md`)
+3. Split task into N non-overlapping scopes (chekr defaults in `reference.md`)
 4. Launch **N+1 Task agents in one message** with sleep instructions
 5. Merge reviewer Report into final response
 

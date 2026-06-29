@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
-import { chunk, resolveStepConfig, toAbsolute } from "@checkr/helpers";
-import { dim, warn } from "@checkr/utils";
+import { chunk, resolveStepConfig, toAbsolute } from "@chekr/helpers";
+import { dim, warn } from "@chekr/utils";
 import {
   contentHash,
   formatIncrementalCacheBanner,
@@ -80,7 +80,7 @@ function buildFilesForCache(scopedFiles, checkedFiles, cachedFiles) {
  */
 function cacheExemptPrefixes(cacheDirRel) {
   const normalized = cacheDirRel.replace(/\\/g, "/").replace(/^\.\//, "");
-  return [`${normalized}/`, ".checkr-cache/"];
+  return [`${normalized}/`, ".chekr-cache/"];
 }
 
 /**
@@ -126,7 +126,7 @@ export async function runStep({
 
   if (useCache) {
     const cacheDir = toAbsolute(
-      /** @type {string} */ (globalConfig.cacheDir ?? ".checkr-cache"),
+      /** @type {string} */ (globalConfig.cacheDir ?? ".chekr-cache"),
       cwd,
     );
     const cachePath = stepCachePath(cacheDir, gitContext, check.id);
@@ -284,7 +284,7 @@ export async function runStep({
 
   if (useCache && gitContext) {
     const cacheDir = toAbsolute(
-      /** @type {string} */ (globalConfig.cacheDir ?? ".checkr-cache"),
+      /** @type {string} */ (globalConfig.cacheDir ?? ".chekr-cache"),
       cwd,
     );
     const cachePath = stepCachePath(cacheDir, gitContext, check.id);
@@ -318,7 +318,7 @@ export async function runStep({
  */
 export async function runSteps({ checks, globalConfig }) {
   const cwd = /** @type {string} */ (globalConfig.cwd ?? process.cwd());
-  const cacheDirRel = /** @type {string} */ (globalConfig.cacheDir ?? ".checkr-cache");
+  const cacheDirRel = /** @type {string} */ (globalConfig.cacheDir ?? ".chekr-cache");
   const verbose = globalConfig.verbose === true;
 
   /** @type {import('./git/git-service.js').GitContext | null} */

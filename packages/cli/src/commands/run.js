@@ -1,6 +1,6 @@
 import { rm } from "node:fs/promises";
-import { ENGINE_DEFAULTS, loadConfig, resolveConfig, run } from "@checkr/core";
-import { toAbsolute } from "@checkr/helpers";
+import { ENGINE_DEFAULTS, loadConfig, resolveConfig, run } from "@chekr/core";
+import { toAbsolute } from "@chekr/helpers";
 import { cliToConfigPatch } from "../argv/cli-to-config-patch.js";
 
 /**

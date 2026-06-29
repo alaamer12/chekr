@@ -1,7 +1,7 @@
 import { readdir } from "node:fs/promises";
 import path from "node:path";
-import { loadConfig, resolveConfig } from "@checkr/core";
-import { toAbsolute } from "@checkr/helpers";
+import { loadConfig, resolveConfig } from "@chekr/core";
+import { toAbsolute } from "@chekr/helpers";
 import { cliToConfigPatch } from "../argv/cli-to-config-patch.js";
 
 /**

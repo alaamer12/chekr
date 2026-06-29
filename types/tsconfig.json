@@ -9,5 +9,5 @@
     "allowJs": true,
     "checkJs": true
   },
-  "include": ["checkr.config.d.ts", "primitives.d.ts", "schema.zod.js", "__tests__/**/*.js"]
+  "include": ["chekr.config.d.ts", "primitives.d.ts", "schema.zod.js", "__tests__/**/*.js"]
 }

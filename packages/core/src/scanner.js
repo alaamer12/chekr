@@ -1,6 +1,6 @@
 import path from "node:path";
-import { isInsideDir, normalizePosixPath, toAbsolute } from "@checkr/helpers";
-import { walkFiles } from "@checkr/utils";
+import { isInsideDir, normalizePosixPath, toAbsolute } from "@chekr/helpers";
+import { walkFiles } from "@chekr/utils";
 import { getChangedPaths, getStagedPaths, isRepo } from "./git/git-service.js";
 import { applyGitignoreFilter, createGitignoreFilter } from "./git/gitignore-filter.js";
 import { deriveExtensions, matchesAny } from "./glob-match.js";

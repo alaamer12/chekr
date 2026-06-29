@@ -5,6 +5,6 @@
  * @param {string} _cwd
  */
 export async function fixCommand(_flags, _positionals, _cwd) {
-  console.error("checkr fix is not yet implemented.");
+  console.error("chekr fix is not yet implemented.");
   process.exitCode = 1;
 }

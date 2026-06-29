@@ -38,7 +38,7 @@ describe("step cache save/load memory", () => {
   });
 
   test(`${CYCLES} save/load cycles do not grow heap unbounded`, async () => {
-    cacheRoot = mkdtempSync(join(tmpdir(), "checkr-cache-mem-"));
+    cacheRoot = mkdtempSync(join(tmpdir(), "chekr-cache-mem-"));
     const gitContext = {
       head: "abc123deadbeef00000000000000000000000000",
       branch: "main",

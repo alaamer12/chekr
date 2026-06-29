@@ -1,6 +1,6 @@
-/** @type {import('checkr').CheckrConfig} */
+/** @type {import('chekr').ChekrConfig} */
 export default {
-  checksDir: "./.checkr/checks",
+  checksDir: "./.chekr/checks",
   include: ["**/*.{ts,tsx}"],
   gitignore: ".gitignore",
   bail: false,

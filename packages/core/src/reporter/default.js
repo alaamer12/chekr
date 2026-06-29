@@ -1,4 +1,4 @@
-import { bold, dim, fail, file as fileColor, lineNum, pass } from "@checkr/utils";
+import { bold, dim, fail, file as fileColor, lineNum, pass } from "@chekr/utils";
 
 /**
  * @param {number} step

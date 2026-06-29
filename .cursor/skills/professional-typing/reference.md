@@ -75,7 +75,7 @@ export interface StepConfig {
   options?: StepOptions;
 }
 
-export interface CheckrConfig {
+export interface ChekrConfig {
   checksDir?: PathLike;
   steps?: StepConfig[];
 }
@@ -85,7 +85,7 @@ export interface CliConfigPatch {
   scanMode?: ScanMode;
 }
 
-export interface ResolvedCheckrConfig extends Required<Pick<CheckrConfig, "checksDir" | …>> {
+export interface ResolvedChekrConfig extends Required<Pick<ChekrConfig, "checksDir" | …>> {
   skip: CheckId[];
   scanMode: ScanMode;
 }
@@ -97,13 +97,13 @@ export interface ResolvedCheckrConfig extends Required<Pick<CheckrConfig, "check
 
 ```ts
 /**
- * Loaded from `checkr.config.js` at project root.
+ * Loaded from `chekr.config.js` at project root.
  * @example
  * ```js
- * export default { checksDir: "./.checkr/checks" };
+ * export default { checksDir: "./.chekr/checks" };
  * ```
  */
-export interface CheckrConfig { … }
+export interface ChekrConfig { … }
 ```
 
 ---

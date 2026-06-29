@@ -1,19 +1,19 @@
-# @checkr/types
+# @chekr/types
 
-TypeScript definitions for `checkr.config.js` and rule contracts.
+TypeScript definitions for `chekr.config.js` and rule contracts.
 
 ## Install
 
 ```bash
-npm install -D @checkr/types
+npm install -D @chekr/types
 ```
 
 ## Usage
 
 ```js
-/** @type {import('checkr').CheckrConfig} */
+/** @type {import('chekr').ChekrConfig} */
 export default {
-  checksDir: "./.checkr/checks",
+  checksDir: "./.chekr/checks",
   gitignore: ".gitignore",
 };
 ```
@@ -22,8 +22,8 @@ export default {
 
 | Import | Content |
 |--------|---------|
-| `checkr` | `CheckrConfig`, `StepConfig`, `PathLike`, `CheckId`, … |
-| `@checkr/types/primitives` | Primitive type aliases |
-| `@checkr/types/schema` | Zod `checkrConfigSchema` (runtime validation) |
+| `chekr` | `ChekrConfig`, `StepConfig`, `PathLike`, `CheckId`, … |
+| `@chekr/types/primitives` | Primitive type aliases |
+| `@chekr/types/schema` | Zod `chekrConfigSchema` (runtime validation) |
 
 See [Configuration guide](https://github.com/alaamer12/chekr/blob/main/docs/CONFIG.md).

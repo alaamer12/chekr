@@ -16,14 +16,14 @@ vi.mock("simple-git", () => {
     raw: vi.fn(),
     diff: vi.fn(),
   };
-  globalThis.__checkrMockGit = instance;
+  globalThis.__chekrMockGit = instance;
   return {
     default: vi.fn(() => instance),
   };
 });
 
 /** @type {ReturnType<typeof vi.fn> & { checkIsRepo: ReturnType<typeof vi.fn>, revparse: ReturnType<typeof vi.fn>, raw: ReturnType<typeof vi.fn>, diff: ReturnType<typeof vi.fn> }} */
-const mockGit = globalThis.__checkrMockGit;
+const mockGit = globalThis.__chekrMockGit;
 
 import {
   diffPaths,
@@ -167,10 +167,10 @@ describe("parseModifiedPathsFromStatus porcelain variants", () => {
   test("skips exempt cache output prefixes", () => {
     const status = [
       " M src/app.ts",
-      "?? .checkr-cache/main/steps/run.json",
-      " M .checkr/output/report.json",
+      "?? .chekr-cache/main/steps/run.json",
+      " M .chekr/output/report.json",
     ].join("\n");
-    const paths = parseModifiedPathsFromStatus(status, [".checkr-cache/", ".checkr/"]);
+    const paths = parseModifiedPathsFromStatus(status, [".chekr-cache/", ".chekr/"]);
     expect([...paths]).toEqual(["src/app.ts"]);
   });
 

@@ -48,7 +48,7 @@ describe("step overrides", () => {
   it("applies per-step include via resolveStepOrder and scanFiles", async () => {
     const globalConfig = resolveConfig(
       {
-        checksDir: "./.checkr/checks",
+        checksDir: "./.chekr/checks",
         include: ["**/*.js"],
         cache: false,
         cwd: FIXTURE,
@@ -94,7 +94,7 @@ describe("run() integration", () => {
   it("runs checks on minimal fixture and finds TODO violations", async () => {
     const result = await run({
       cwd: FIXTURE,
-      configPath: path.join(FIXTURE, "checkr.config.js"),
+      configPath: path.join(FIXTURE, "chekr.config.js"),
       loadFileConfig: false,
       cache: false,
       reporter: "json",
@@ -112,7 +112,7 @@ describe("run() integration", () => {
   it("filters gitignored files from scan", async () => {
     const result = await run({
       cwd: FIXTURE,
-      checksDir: "./.checkr/checks",
+      checksDir: "./.chekr/checks",
       only: ["check_todo_violation"],
       include: ["**/*.js"],
       gitignore: ".gitignore",
@@ -130,7 +130,7 @@ describe("run() integration", () => {
   it("bails on first failure when bail is true", async () => {
     const result = await run({
       cwd: FIXTURE,
-      checksDir: "./.checkr/checks",
+      checksDir: "./.chekr/checks",
       include: ["**/*.js"],
       scanPath: "src",
       cache: false,

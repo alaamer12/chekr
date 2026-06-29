@@ -42,7 +42,7 @@ export function report(result, config) {
  */
 function formatTextReport(result) {
   const lines = [];
-  lines.push("Checkr Violation Report");
+  lines.push("Chekr Violation Report");
   lines.push(`Generated: ${result.meta?.timestamp ?? new Date().toISOString()}`);
   lines.push("");
 

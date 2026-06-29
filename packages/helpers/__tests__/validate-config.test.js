@@ -4,13 +4,13 @@ import { ConfigError, validateConfig } from "../src/config/validate-config.js";
 describe("validateConfig", () => {
   it("accepts a valid config", () => {
     const config = validateConfig({
-      checksDir: "./.checkr/checks",
+      checksDir: "./.chekr/checks",
       reporter: "json",
       concurrency: 4,
       steps: [{ id: "check_raw_colors", enabled: true }],
     });
 
-    expect(config.checksDir).toBe("./.checkr/checks");
+    expect(config.checksDir).toBe("./.chekr/checks");
   });
 
   it("throws ConfigError with field path for invalid reporter", () => {

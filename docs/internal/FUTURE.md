@@ -1,4 +1,4 @@
-# checkr — Future Vision
+# chekr — Future Vision
 
 This document captures planned evolution beyond the v1.x/v2.x roadmap. These are not committed features — they are directional decisions that shape how v1.x is built so it doesn't block v3.x.
 
@@ -6,9 +6,9 @@ This document captures planned evolution beyond the v1.x/v2.x roadmap. These are
 
 ## F-01: Multi-language support via independent binary
 
-**Current state (v1.x):** checkr is a Node.js tool. Rule files are JS/TS. Source files scanned are JS/TS. The engine is coupled to the Node.js runtime.
+**Current state (v1.x):** chekr is a Node.js tool. Rule files are JS/TS. Source files scanned are JS/TS. The engine is coupled to the Node.js runtime.
 
-**Future state (v3.x):** checkr ships as a standalone binary (`.exe` on Windows, native binary on macOS/Linux) with no Node.js dependency. Rule files can be written in any language that compiles to the binary's plugin interface.
+**Future state (v3.x):** chekr ships as a standalone binary (`.exe` on Windows, native binary on macOS/Linux) with no Node.js dependency. Rule files can be written in any language that compiles to the binary's plugin interface.
 
 **Why this matters:**
 - Python projects, Rust projects, Go projects all have AI-generated code that drifts from design contracts
@@ -18,8 +18,8 @@ This document captures planned evolution beyond the v1.x/v2.x roadmap. These are
 **How it works:**
 - The engine core is rewritten in a compiled language (Rust is the likely candidate — fast, cross-platform, excellent binary distribution)
 - Rule files communicate with the engine via a defined IPC protocol (stdin/stdout JSON or a shared library interface)
-- Language-specific SDKs provide the rule authoring utilities (`@checkr/sdk-js`, `checkr-sdk-python`, etc.)
-- The binary is distributed via npm (`@checkr/cli` becomes a thin wrapper that downloads the platform binary), Homebrew, and direct download
+- Language-specific SDKs provide the rule authoring utilities (`@chekr/sdk-js`, `chekr-sdk-python`, etc.)
+- The binary is distributed via npm (`@chekr/cli` becomes a thin wrapper that downloads the platform binary), Homebrew, and direct download
 
 **Migration path from v1.x:**
 - Existing JS/TS rule files continue to work via the JS SDK
@@ -32,28 +32,28 @@ This document captures planned evolution beyond the v1.x/v2.x roadmap. These are
 
 **Current state (v1.x):** Only block-style ignore comments are supported:
 ```js
-// @checkr-ignore-start
+// @chekr-ignore-start
 const raw = '#5B8FF9'
-// @checkr-ignore-end
+// @chekr-ignore-end
 ```
 
 **Future state (v2.x):** Single-line ignore on the next line:
 ```js
-// @checkr-ignore-next
+// @chekr-ignore-next
 const raw = '#5B8FF9'
 ```
 
 And inline ignore on the same line:
 ```js
-const raw = '#5B8FF9' // @checkr-ignore
+const raw = '#5B8FF9' // @chekr-ignore
 ```
 
 **Why deferred:** Block ignores cover all cases. Single-line ignores are a convenience feature. Adding them in v1.x would complicate `buildIgnoredLines()` and the ignore block parser before the core is stable.
 
-**Implementation note:** `buildIgnoredLines()` in `@checkr/utils` will be extended to return a `Set<number>` that includes:
-- All lines inside `@checkr-ignore-start` / `@checkr-ignore-end` blocks (existing)
-- The line immediately following `@checkr-ignore-next` (new)
-- Lines containing `@checkr-ignore` as an inline comment (new)
+**Implementation note:** `buildIgnoredLines()` in `@chekr/utils` will be extended to return a `Set<number>` that includes:
+- All lines inside `@chekr-ignore-start` / `@chekr-ignore-end` blocks (existing)
+- The line immediately following `@chekr-ignore-next` (new)
+- Lines containing `@chekr-ignore` as an inline comment (new)
 
 Rule authors don't need to change their code — they already call `ignored.has(lineNum)` and the set will just contain more line numbers.
 
@@ -66,9 +66,9 @@ Rule authors don't need to change their code — they already call `ignored.has(
 **Future state (v2.x):** The comment syntax is configurable per file type:
 
 ```js
-// checkr.config.js
+// chekr.config.js
 export default {
-  ignoreMarker: '@checkr-ignore',
+  ignoreMarker: '@chekr-ignore',
   commentStyles: {
     '.py':   '#',      // Python
     '.rb':   '#',      // Ruby
@@ -87,35 +87,35 @@ This is a prerequisite for F-01 (multi-language support) — you can't ignore li
 
 ## F-04: Git hooks integration
 
-**Current state (v1.x):** checkr can be manually added to git hooks. `checkr run --staged` is designed for pre-commit use but requires manual hook setup.
+**Current state (v1.x):** chekr can be manually added to git hooks. `chekr run --staged` is designed for pre-commit use but requires manual hook setup.
 
 **Future state (v2.x):** First-class git hook support:
 
 ```bash
-checkr hooks install          # install pre-commit hook
-checkr hooks install --pre-push  # install pre-push hook
-checkr hooks uninstall        # remove hooks
-checkr hooks status           # show installed hooks
+chekr hooks install          # install pre-commit hook
+chekr hooks install --pre-push  # install pre-push hook
+chekr hooks uninstall        # remove hooks
+chekr hooks status           # show installed hooks
 ```
 
-The installed hook runs `checkr run --staged` automatically on every commit. No manual `.git/hooks/` editing required.
+The installed hook runs `chekr run --staged` automatically on every commit. No manual `.git/hooks/` editing required.
 
 **Integration with popular hook managers:**
 - `husky` — generate husky config
-- `lint-staged` — generate lint-staged config that runs checkr on staged files
+- `lint-staged` — generate lint-staged config that runs chekr on staged files
 - `lefthook` — generate lefthook config
 
 ```bash
-checkr hooks install --husky
-checkr hooks install --lint-staged
-checkr hooks install --lefthook
+chekr hooks install --husky
+chekr hooks install --lint-staged
+chekr hooks install --lefthook
 ```
 
 ---
 
 ## F-05: Dependency reduction
 
-**Current state (v1.x):** checkr uses npm dependencies for convenience during initial development:
+**Current state (v1.x):** chekr uses npm dependencies for convenience during initial development:
 - `fast-glob` — file walking
 - `chokidar` — file watching (watch mode)
 - `picocolors` or `chalk` — terminal colors
@@ -130,7 +130,7 @@ checkr hooks install --lefthook
 | `chalk` / `picocolors` | Inline ANSI escape codes | v1.x (already simple) |
 | Arg parser | Custom 50-line parser | v1.x |
 
-**Rationale:** Each dependency is a potential supply chain risk, a version conflict source, and a maintenance burden. The operations checkr needs (walk files, watch files, color output, parse args) are simple enough to implement in < 200 lines each. The goal is `@checkr/core` with zero runtime dependencies by v2.x.
+**Rationale:** Each dependency is a potential supply chain risk, a version conflict source, and a maintenance burden. The operations chekr needs (walk files, watch files, color output, parse args) are simple enough to implement in < 200 lines each. The goal is `@chekr/core` with zero runtime dependencies by v2.x.
 
 **Note:** Rule files can still use any dependencies they want — this only applies to the engine itself.
 
@@ -143,7 +143,7 @@ checkr hooks install --lefthook
 **Full design:**
 
 ```
-checkr watch
+chekr watch
   │
   ├─ Phase 1: Initial full run
   │     Run all checks against all files
@@ -159,7 +159,7 @@ checkr watch
           Re-render full results panel
           Show diff: "2 violations fixed, 1 new violation"
         
-        On check file save (in .checkr/checks/):
+        On check file save (in .chekr/checks/):
           Reload the changed check
           Re-run that check against ALL files
           (the rule changed, not the source — full re-check for that rule)
@@ -171,7 +171,7 @@ checkr watch
 
 **Terminal UI in watch mode:**
 ```
-checkr watch — 847 files, 12 checks
+chekr watch — 847 files, 12 checks
 
 ✅ check_ipc_direct          (0 violations)
 ✅ check_capability_deps     (0 violations)
@@ -198,14 +198,14 @@ On fix:
 
 ---
 
-## F-07: Rule testing utilities (`@checkr/testing`)
+## F-07: Rule testing utilities (`@chekr/testing`)
 
-**Future package:** `@checkr/testing` — utilities for writing tests for your rules.
+**Future package:** `@chekr/testing` — utilities for writing tests for your rules.
 
 ```js
-import { expectViolation, expectNoViolation, expectFix } from '@checkr/testing'
-import { checkRawColors } from '../.checkr/checks/check_raw_colors.js'
-import { fixRawColors } from '../.checkr/fixes/fix_raw_colors.js'
+import { expectViolation, expectNoViolation, expectFix } from '@chekr/testing'
+import { checkRawColors } from '../.chekr/checks/check_raw_colors.js'
+import { fixRawColors } from '../.chekr/fixes/fix_raw_colors.js'
 
 // Assert a violation is detected
 expectViolation(checkRawColors, {
@@ -248,12 +248,12 @@ These decisions in v1.x are made specifically to not block the future items abov
 
 ## F-08: HTML report output
 
-**Current state (v1.x):** checkr outputs to stdout in three formats: `default` (colored terminal), `json`, and `compact`. All are text-based.
+**Current state (v1.x):** chekr outputs to stdout in three formats: `default` (colored terminal), `json`, and `compact`. All are text-based.
 
 **Future state (v2.x):** A fourth reporter — `html` — generates a self-contained HTML file with a full interactive violation report.
 
 ```bash
-checkr run --reporter html --report ./checkr-report.html
+chekr run --reporter html --report ./chekr-report.html
 ```
 
 **What the HTML report includes:**
@@ -261,7 +261,7 @@ checkr run --reporter html --report ./checkr-report.html
 - Summary header — total violations, files scanned, time taken, pass/fail status
 - Step-by-step breakdown — each check as a collapsible section
 - Per-violation detail — file path (clickable if served locally), line number, offending text, message, fix hint
-- Ignored blocks report — a separate section listing every `@checkr-ignore` block in the codebase with file, line range, and the comment explaining why it was suppressed
+- Ignored blocks report — a separate section listing every `@chekr-ignore` block in the codebase with file, line range, and the comment explaining why it was suppressed
 - Syntax-highlighted source context — 3 lines before and after each violation
 - Filter controls — filter by step, severity, file path
 - Copy-to-clipboard for violation details
@@ -277,15 +277,15 @@ JSON is for machines — CI systems, scripts, dashboards. HTML is for humans who
 
 **Self-contained:** The HTML file has no external dependencies — all CSS and JS is inlined. It opens correctly from the filesystem without a server.
 
-**Implementation note:** The HTML reporter is a separate module in `@checkr/core/reporters/html.js`. It receives the same `ReportResult` object as the JSON reporter and renders it to a string. No new data structures needed — the existing violation and step result types are sufficient.
+**Implementation note:** The HTML reporter is a separate module in `@chekr/core/reporters/html.js`. It receives the same `ReportResult` object as the JSON reporter and renders it to a string. No new data structures needed — the existing violation and step result types are sufficient.
 
 ---
 
 ## F-09: Safe violations database (`--save-safe`)
 
-**Current state (v1.x):** Every violation found is reported on every run. The only way to suppress a violation is to add an `@checkr-ignore` block in the source file. There is no way to acknowledge a violation as intentional without modifying source.
+**Current state (v1.x):** Every violation found is reported on every run. The only way to suppress a violation is to add an `@chekr-ignore` block in the source file. There is no way to acknowledge a violation as intentional without modifying source.
 
-**Future state (v2.x):** A local SQLite database (`.checkr/safe.db`) records violations that have been explicitly marked safe. On subsequent runs, violations matched against the database are silently skipped — they do not appear in output and do not affect the exit code.
+**Future state (v2.x):** A local SQLite database (`.chekr/safe.db`) records violations that have been explicitly marked safe. On subsequent runs, violations matched against the database are silently skipped — they do not appear in output and do not affect the exit code.
 
 ---
 
@@ -293,26 +293,26 @@ JSON is for machines — CI systems, scripts, dashboards. HTML is for humans who
 
 ```bash
 # Mark all current violations as safe
-checkr run --save-safe
+chekr run --save-safe
 
 # Mark violations from a saved JSON report as safe
-checkr violations.json --save-safe
+chekr violations.json --save-safe
 
 # Wipe the entire safe database
-checkr --reset
+chekr --reset
 ```
 
 ---
 
 ### The `--save-safe` flag
 
-When `--save-safe` is passed alongside `checkr run`, the engine runs normally, collects all violations, then writes each one to the database before exiting with code `0`.
+When `--save-safe` is passed alongside `chekr run`, the engine runs normally, collects all violations, then writes each one to the database before exiting with code `0`.
 
 ```bash
-checkr run --save-safe
+chekr run --save-safe
 # → Runs all checks
 # → Finds N violations
-# → Saves each violation as safe in .checkr/safe.db
+# → Saves each violation as safe in .chekr/safe.db
 # → Exits 0
 # → Output: "N violations saved as safe."
 ```
@@ -320,7 +320,7 @@ checkr run --save-safe
 On the next run (without `--save-safe`), those violations are looked up in the database and suppressed:
 
 ```bash
-checkr run
+chekr run
 # → Runs all checks
 # → Finds N violations
 # → Filters out the N safe violations
@@ -331,16 +331,16 @@ checkr run
 
 ### Reading from a violations JSON file
 
-`checkr violations.json --save-safe` accepts a path to a JSON report (produced by `checkr run --reporter json --report violations.json`) and marks every violation in that file as safe, without re-running the checks.
+`chekr violations.json --save-safe` accepts a path to a JSON report (produced by `chekr run --reporter json --report violations.json`) and marks every violation in that file as safe, without re-running the checks.
 
 ```bash
 # Step 1: generate a report
-checkr run --reporter json --report violations.json
+chekr run --reporter json --report violations.json
 
 # Step 2: review the report, decide these are acceptable
 
 # Step 3: mark them all safe
-checkr violations.json --save-safe
+chekr violations.json --save-safe
 # → "47 violations from violations.json saved as safe."
 ```
 
@@ -358,7 +358,7 @@ violation_line  — the exact text of the violating line
 context_after   — up to 3 lines after the violation line
 ```
 
-On a subsequent run, when a violation is found at `src/Button.tsx:42`, checkr reads the actual file and extracts the same window around line 42. It then checks the database for a safe record where:
+On a subsequent run, when a violation is found at `src/Button.tsx:42`, chekr reads the actual file and extracts the same window around line 42. It then checks the database for a safe record where:
 
 1. `file_path` matches (normalized, repo-relative)
 2. `check_id` matches
@@ -373,22 +373,22 @@ If all three match, the violation is considered safe. If the surrounding code ha
 ### The `--reset` flag
 
 ```bash
-checkr --reset
+chekr --reset
 ```
 
-Deletes `.checkr/safe.db` entirely. All safe records are discarded. The next `checkr run` will report all violations as if `--save-safe` had never been used.
+Deletes `.chekr/safe.db` entirely. All safe records are discarded. The next `chekr run` will report all violations as if `--save-safe` had never been used.
 
 A confirmation prompt is shown before deletion:
 
 ```
-This will delete .checkr/safe.db and remove all 47 safe violation records.
+This will delete .chekr/safe.db and remove all 47 safe violation records.
 Are you sure? (y/N)
 ```
 
 Pass `--yes` to skip the prompt in scripts:
 
 ```bash
-checkr --reset --yes
+chekr --reset --yes
 ```
 
 ---
@@ -417,22 +417,22 @@ The `UNIQUE INDEX` on `(file_path, check_id, violation_line, context_before, con
 
 ---
 
-### `.checkr/safe.db` and version control
+### `.chekr/safe.db` and version control
 
 The safe database is a local file. Whether to commit it is a project decision:
 
 - **Commit it** — the team shares a common set of accepted violations. `--save-safe` on one machine is respected by everyone.
 - **Gitignore it** — each developer maintains their own safe set. Useful for personal development workflows where one developer wants to ignore noise that others still want to see.
 
-checkr does not make this decision — it only creates the file. The project's `.gitignore` controls whether it is shared.
+chekr does not make this decision — it only creates the file. The project's `.gitignore` controls whether it is shared.
 
 ---
 
-### Interaction with `@checkr-ignore` blocks
+### Interaction with `@chekr-ignore` blocks
 
-`@checkr-ignore` blocks in source files take precedence and are evaluated first. Lines inside an ignore block never reach the safe database lookup. The database is only consulted for violations that survive the ignore-block filter.
+`@chekr-ignore` blocks in source files take precedence and are evaluated first. Lines inside an ignore block never reach the safe database lookup. The database is only consulted for violations that survive the ignore-block filter.
 
-This means `@checkr-ignore` is still the right tool for permanent, code-level suppressions. `--save-safe` is for project-level or developer-level acceptance of violations that cannot or should not be annotated in source (third-party files, generated files, intentional one-off exceptions).
+This means `@chekr-ignore` is still the right tool for permanent, code-level suppressions. `--save-safe` is for project-level or developer-level acceptance of violations that cannot or should not be annotated in source (third-party files, generated files, intentional one-off exceptions).
 
 ---
 
@@ -444,7 +444,7 @@ The safe database is designed so it does not change the rule contract or the vio
 - `buildIgnoredLines()` is unchanged — the database operates at a different layer
 - The `Violation` type gains no new fields — context extraction happens inside the engine when saving and matching
 
-The only new engine surface is a `SafeDB` module in `@checkr/core/safe-db.js` with four operations: `open()`, `save(violations[])`, `filter(violations[]) → violations[]`, and `reset()`.
+The only new engine surface is a `SafeDB` module in `@chekr/core/safe-db.js` with four operations: `open()`, `save(violations[])`, `filter(violations[]) → violations[]`, and `reset()`.
 
 ---
 
@@ -473,7 +473,7 @@ The only new engine surface is a `SafeDB` module in `@checkr/core/safe-db.js` wi
 A check file exports its severity via a `severity` named export alongside its check function:
 
 ```js
-// .checkr/checks/check_raw_colors.js
+// .chekr/checks/check_raw_colors.js
 
 export const severity = 'error'   // level 3 — default, can be omitted
 
@@ -483,7 +483,7 @@ export function checkRawColors(source, filePath) {
 ```
 
 ```js
-// .checkr/checks/check_todo_comments.js
+// .chekr/checks/check_todo_comments.js
 
 export const severity = 'info'   // level 1 — never blocks
 
@@ -493,7 +493,7 @@ export function checkTodoComments(source, filePath) {
 ```
 
 ```js
-// .checkr/checks/check_deprecated_api.js
+// .chekr/checks/check_deprecated_api.js
 
 export const severity = 'warning'   // level 2
 
@@ -510,10 +510,10 @@ The `severity` export is optional. If absent, the engine treats the check as `er
 
 ### Overriding severity in config
 
-Severity can also be set or overridden per check in `checkr.config.js`, without touching the check file itself:
+Severity can also be set or overridden per check in `chekr.config.js`, without touching the check file itself:
 
 ```js
-// checkr.config.js
+// chekr.config.js
 export default {
   rules: {
     'check_todo_comments':  'info',     // downgrade
@@ -530,17 +530,17 @@ Config takes precedence over the check file's own `severity` export. This lets a
 ### The `--level` flag
 
 ```bash
-checkr run --level error      # only error-level checks (default)
-checkr run --level warning    # warning + error
-checkr run --level info       # all checks — info + warning + error
+chekr run --level error      # only error-level checks (default)
+chekr run --level warning    # warning + error
+chekr run --level info       # all checks — info + warning + error
 ```
 
 Numeric aliases:
 
 ```bash
-checkr run --level 3   # same as --level error
-checkr run --level 2   # same as --level warning
-checkr run --level 1   # same as --level info
+chekr run --level 3   # same as --level error
+chekr run --level 2   # same as --level warning
+chekr run --level 1   # same as --level info
 ```
 
 `--level` sets the **minimum** severity to include. Checks below the threshold are skipped entirely — they don't run, don't produce output, and don't affect the exit code.
@@ -588,22 +588,22 @@ Compact and JSON reporters include the level field on each violation and step re
 
 **CI (strict)** — only hard failures block the pipeline:
 ```bash
-checkr run                        # default: --level error
+chekr run                        # default: --level error
 ```
 
 **CI (with warnings surfaced)** — warnings appear in output but a warning-only run still exits 0 if that's desired... or exits 1 to enforce them:
 ```bash
-checkr run --level warning
+chekr run --level warning
 ```
 
 **Local development** — see everything including informational notes:
 ```bash
-checkr run --level info
+chekr run --level info
 ```
 
 **Pre-commit hook** — fast, errors only:
 ```bash
-checkr run --staged               # default level: error
+chekr run --staged               # default level: error
 ```
 
 ---

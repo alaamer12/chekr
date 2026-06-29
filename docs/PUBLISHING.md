@@ -1,18 +1,18 @@
-# Publishing checkr to npm
+# Publishing chekr to npm
 
 Only **two packages** are published to npm:
 
 | Package | Purpose |
 |---------|---------|
-| `@checkr/cli` | `checkr` binary + bundled engine & rule utilities |
-| `@checkr/types` | TypeScript definitions and Zod config schema |
+| `@chekr/cli` | `chekr` binary + bundled engine & rule utilities |
+| `@chekr/types` | TypeScript definitions and Zod config schema |
 
-`@checkr/helpers`, `@checkr/utils`, and `@checkr/core` are **private** monorepo packages. They ship **inside** `@checkr/cli` via `bundledDependencies` — not as separate registry packages.
+`@chekr/helpers`, `@chekr/utils`, and `@chekr/core` are **private** monorepo packages. They ship **inside** `@chekr/cli` via `bundledDependencies` — not as separate registry packages.
 
-After `npm install -D @checkr/cli`, rule files can still use:
+After `npm install -D @chekr/cli`, rule files can still use:
 
 ```js
-import { walkFiles, buildIgnoredLines } from "@checkr/utils";
+import { walkFiles, buildIgnoredLines } from "@chekr/utils";
 ```
 
 Those modules are hoisted from the CLI bundle into `node_modules`.
@@ -20,7 +20,7 @@ Those modules are hoisted from the CLI bundle into `node_modules`.
 ## Prerequisites
 
 1. **npm account** — [https://www.npmjs.com/signup](https://www.npmjs.com/signup)
-2. **`@checkr` scope** on npm (org or user)
+2. **`@chekr` scope** on npm (org or user)
 3. **Logged in locally:**
 
 ```bash
@@ -39,9 +39,9 @@ bun run verify
 
 ### 1. Align versions
 
-`@checkr/cli`, `@checkr/types`, and all internal packages should share the same version (e.g. `0.1.0`).
+`@chekr/cli`, `@chekr/types`, and all internal packages should share the same version (e.g. `0.1.0`).
 
-`@checkr/cli` lists internal packages with **exact** versions (`0.1.0`, not `workspace:*`) so `npm pack` can bundle them.
+`@chekr/cli` lists internal packages with **exact** versions (`0.1.0`, not `workspace:*`) so `npm pack` can bundle them.
 
 ### 2. Dry-run the CLI tarball
 
@@ -54,9 +54,9 @@ npm pack --dry-run
 Confirm the tarball includes bundled packages:
 
 ```
-node_modules/@checkr/core
-node_modules/@checkr/helpers
-node_modules/@checkr/utils
+node_modules/@chekr/core
+node_modules/@chekr/helpers
+node_modules/@chekr/utils
 ```
 
 ### 3. Public access
@@ -88,25 +88,27 @@ Order does not matter between these two — they have no dependency on each othe
 In a temp directory:
 
 ```bash
-mkdir /tmp/checkr-smoke && cd /tmp/checkr-smoke
+mkdir /tmp/chekr-smoke && cd /tmp/chekr-smoke
 npm init -y
-npm install -D @checkr/cli @checkr/types
-npx checkr init
-npx checkr run
+npm install -D @chekr/cli @chekr/types
+npx chekr init
+npx chekr run
 ```
+
+(`npx chekr` resolves the `chekr` binary from `@chekr/cli` after install.)
 
 Confirm rule utilities resolve:
 
 ```bash
-node -e "import('@checkr/utils').then(m => console.log(Object.keys(m)))"
+node -e "import('@chekr/utils').then(m => console.log(Object.keys(m)))"
 ```
 
 ## Version bumps (after v0.1.0)
 
 1. Bump version in `types/package.json`, `packages/cli/package.json`, and all internal `packages/*/package.json`
-2. Update exact internal versions in `packages/cli/package.json` (`@checkr/core`, etc.)
+2. Update exact internal versions in `packages/cli/package.json` (`@chekr/core`, etc.)
 3. `bun run verify`
-4. Publish `@checkr/types` and `@checkr/cli`
+4. Publish `@chekr/types` and `@chekr/cli`
 5. Tag git: `git tag v0.2.0 && git push origin v0.2.0`
 
 ## Troubleshooting
@@ -114,7 +116,7 @@ node -e "import('@checkr/utils').then(m => console.log(Object.keys(m)))"
 | Error | Fix |
 |-------|-----|
 | `402 You must sign up for private packages` | Add `--access public` |
-| `403 Forbidden` | Not a member of `@checkr` org |
+| `403 Forbidden` | Not a member of `@chekr` org |
 | `409 Cannot publish over existing version` | Bump version |
 | Bundled packages missing from tarball | Run `bun install` from root; ensure internal packages exist in `node_modules` |
 | `workspace:*` in published package | Use exact semver in `packages/cli` dependencies |
@@ -122,7 +124,7 @@ node -e "import('@checkr/utils').then(m => console.log(Object.keys(m)))"
 ## What stays private
 
 - Root `package.json` (`"private": true`) — monorepo dev tooling
-- `@checkr/helpers`, `@checkr/utils`, `@checkr/core` — bundled into CLI, not published separately
+- `@chekr/helpers`, `@chekr/utils`, `@chekr/core` — bundled into CLI, not published separately
 
 ## CI publish (optional)
 

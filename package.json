@@ -1,5 +1,5 @@
 {
-  "name": "checkr",
+  "name": "chekr",
   "version": "0.1.0",
   "private": true,
   "description": "AI output alignment checker — enforce design system contracts with plain JS rules",
@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/alaamer12/chekr#readme",
   "keywords": [
-    "checkr",
+    "chekr",
     "ai",
     "design-system",
     "linter",
@@ -22,7 +22,7 @@
     "contract"
   ],
   "bin": {
-    "checkr": "./packages/cli/src/index.js"
+    "chekr": "./packages/cli/src/index.js"
   },
   "workspaces": [
     "packages/*",
@@ -48,7 +48,7 @@
     "test:all": "bun run test:helpers && bun run test:utils && bun run test:core && bun run test:cli && bun run test:types",
     "typecheck": "tsc -p types/tsconfig.json",
     "typecheck:types": "tsc -p types/tsconfig.json",
-    "smoke": "cd examples/minimal && bunx checkr run",
+    "smoke": "cd examples/minimal && node ../../packages/cli/src/index.js run",
     "verify": "bun run lint && bun run typecheck && bun run test:all && bun run smoke"
   }
 }

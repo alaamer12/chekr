@@ -1,10 +1,10 @@
 {
-  "name": "@checkr/cli",
+  "name": "@chekr/cli",
   "version": "0.1.0",
-  "description": "Command-line interface for checkr — run project rules from the terminal",
+  "description": "Command-line interface for chekr — run project rules from the terminal",
   "license": "MIT",
   "type": "module",
-  "author": "checkr contributors",
+  "author": "chekr contributors",
   "engines": {
     "node": ">=18"
   },
@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/alaamer12/chekr/tree/main/packages/cli#readme",
   "keywords": [
-    "checkr",
+    "chekr",
     "cli",
     "design-system",
     "rules",
@@ -29,7 +29,7 @@
     "access": "public"
   },
   "bin": {
-    "checkr": "./src/index.js"
+    "chekr": "./src/index.js"
   },
   "main": "./src/index.js",
   "exports": {
@@ -45,13 +45,13 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@checkr/core": "0.1.0",
-    "@checkr/helpers": "0.1.0",
-    "@checkr/utils": "0.1.0"
+    "@chekr/core": "0.1.0",
+    "@chekr/helpers": "0.1.0",
+    "@chekr/utils": "0.1.0"
   },
   "bundledDependencies": [
-    "@checkr/core",
-    "@checkr/helpers",
-    "@checkr/utils"
+    "@chekr/core",
+    "@chekr/helpers",
+    "@chekr/utils"
   ]
 }

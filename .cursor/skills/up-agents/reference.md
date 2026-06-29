@@ -30,13 +30,13 @@ function workerSleepSeconds(i, N, stagger = 60, reviewerDelay = 800) {
 
 ---
 
-## checkr default split (N=4, plan.md)
+## chekr default split (N=4, plan.md)
 
 Use when user says `up-agents 4 + 1` on this repo without a custom split.
 
 | Worker | Sleep | Owns | Deliverables |
 |--------|-------|------|--------------|
-| **W1** | 0s | `package.json` (root), `types/`, `packages/helpers/**`, empty shells for utils/core/cli | Full `@checkr/helpers`, `checkr.config.d.ts`, workspace scaffold |
+| **W1** | 0s | `package.json` (root), `types/`, `packages/helpers/**`, empty shells for utils/core/cli | Full `@chekr/helpers`, `chekr.config.d.ts`, workspace scaffold |
 | **W2** | 60s | `packages/utils/**` | Port toolkit utils, no chalk, marker param on ignore handler |
 | **W3** | 180s | `packages/core/**` | Engine, config, git module, reporter, `run()` API |
 | **W4** | 480s | `packages/cli/**`, `examples/**`, `docs/CONFIG.md`, `docs/CLI.md` | CLI commands, migrate/delete `toolkit/` |
@@ -55,15 +55,15 @@ Use when user says `up-agents 4 + 1` on this repo without a custom split.
 
 ### Reviewer DoD (plan.md §12)
 
-1. `checkr.config.js` + `checkr.config.d.ts` working
+1. `chekr.config.js` + `chekr.config.d.ts` working
 2. Global + per-step config via `steps[].*`
 3. `gitignore` path filters files
 4. CLI overrides all config fields
-5. `@checkr/helpers` parse/merge helpers exist
+5. `@chekr/helpers` parse/merge helpers exist
 6. Only `simple-git` + `ignore` in core deps
 7. No chalk
 8. `toolkit/` gone; symphony rules in `examples/`
-9. `checkr run` E2E on `examples/minimal/`
+9. `chekr run` E2E on `examples/minimal/`
 
 ---
 
@@ -109,4 +109,4 @@ up-agents 3 + 1 @600 refactor packages/core only — see plan.md §8
 up-agents 4 + 1 stagger@90
 ```
 
-Orchestrator reads `plan.md`, applies checkr default split from this file, launches 5 Task agents.
+Orchestrator reads `plan.md`, applies chekr default split from this file, launches 5 Task agents.
