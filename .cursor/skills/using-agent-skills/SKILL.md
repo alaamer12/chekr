@@ -27,6 +27,7 @@ This repo keeps its skills in **`.cursor/skills/`**. Each skill is a directory w
 | **building-native-ui** | `.cursor/skills/building-native-ui/` | Expo Router native app UI — navigation, tabs, animations, patterns |
 | **expo-ui** | `.cursor/skills/expo-ui/` | `@expo/ui` — SwiftUI/Compose native components from React |
 | **expo-api-routes** | `.cursor/skills/expo-api-routes/` | API routes in Expo Router with EAS Hosting |
+| **up-agents** | `.cursor/skills/up-agents/` | `up-agents N + 1` — staggered worker subagents + delayed reviewer |
 
 ---
 
@@ -68,6 +69,7 @@ Task arrives
 | New Expo/RN app work | `building-native-ui` + `react-native-best-practices` |
 | `/bug-hunter` subagent | `bug-hunting-skill` (re-read `reference.md` per package) |
 | Pool of agents `/pool-agents` | `using-agent-skills` to assign skills per branch |
+| `up-agents` / `up-agents 4 + 1` | `up-agents` skill — staggered workers + reviewer |
 
 ---
 
