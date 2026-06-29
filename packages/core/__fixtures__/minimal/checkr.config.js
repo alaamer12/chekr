@@ -9,12 +9,12 @@ export default {
   reporter: "json",
   steps: [
     {
-      id: "always_pass",
+      id: "check_always_pass",
       step: 1,
       enabled: true,
     },
     {
-      id: "todo_violation",
+      id: "check_todo_violation",
       step: 2,
       enabled: true,
       include: ["src/**/*.js"],

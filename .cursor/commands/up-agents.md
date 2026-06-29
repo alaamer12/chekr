@@ -31,6 +31,8 @@ Launch **N worker subagents** with staggered sleeps, plus **1 reviewer** that st
 /up-agents 4 + 1
 /up-agents 3 + 1 @600
 /up-agents 4 + 1 stagger@90 migrate toolkit per plan.md
+/up-agents 5 + 1 @600          # remediation: audit, cli, biome, heavy tests
+/up-agents as needed            # agent picks 4+1 or 5+1 from repo state
 ```
 
 ## What you do

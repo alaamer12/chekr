@@ -1,11 +1,30 @@
 {
   "name": "@checkr/helpers",
   "version": "0.1.0",
+  "description": "Shared helpers for checkr config parsing, path utilities, and naming conventions",
+  "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alaamer12/chekr.git",
+    "directory": "packages/helpers"
+  },
+  "keywords": [
+    "checkr",
+    "helpers",
+    "config",
+    "utilities"
+  ],
   "main": "src/index.js",
   "exports": {
     ".": "./src/index.js"
   },
+  "files": [
+    "src"
+  ],
   "scripts": {
     "test": "vitest run"
   }

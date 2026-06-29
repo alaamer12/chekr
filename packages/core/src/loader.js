@@ -8,6 +8,8 @@ import { deriveCheckExport, toAbsolute } from "@checkr/helpers";
  * @property {string} id
  * @property {string} filename
  * @property {Function} fn
+ * @property {Function} [repoFn]
+ * @property {Function} [checkProject]
  * @property {number} [step]
  * @property {string} [description]
  * @property {Record<string, unknown>} [config]
@@ -36,22 +38,24 @@ export async function loadChecks(checksDir, cwd) {
   const loaded = [];
 
   for (const filename of checkFiles) {
-    const id = filename.replace(/^check_/, "").replace(/\.js$/, "");
+    const id = filename.replace(/\.js$/, "");
     const filePath = path.join(absoluteDir, filename);
     const mod = await import(pathToFileURL(filePath).href);
     const exportName = deriveCheckExport(filename);
     const fn = mod[exportName];
+    const repoFn = mod[`${exportName}Repo`];
+    const checkProject = mod.checkProject;
 
     if (typeof fn !== "function") {
-      throw new Error(
-        `Check ${filename} must export function ${exportName}`,
-      );
+      throw new Error(`Check ${filename} must export function ${exportName}`);
     }
 
     loaded.push({
       id,
       filename,
       fn,
+      ...(typeof repoFn === "function" ? { repoFn } : {}),
+      ...(typeof checkProject === "function" ? { checkProject } : {}),
     });
   }
 

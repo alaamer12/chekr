@@ -14,20 +14,11 @@ export function parseBooleanFlag(val) {
 
   const normalized = String(val).trim().toLowerCase();
 
-  if (
-    normalized === "" ||
-    normalized === "false" ||
-    normalized === "0" ||
-    normalized === "no"
-  ) {
+  if (normalized === "" || normalized === "false" || normalized === "0" || normalized === "no") {
     return false;
   }
 
-  if (
-    normalized === "true" ||
-    normalized === "1" ||
-    normalized === "yes"
-  ) {
+  if (normalized === "true" || normalized === "1" || normalized === "yes") {
     return true;
   }
 

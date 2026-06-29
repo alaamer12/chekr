@@ -2,12 +2,28 @@
   "name": "checkr",
   "version": "0.1.0",
   "private": true,
-  "workspaces": ["packages/*"],
+  "bin": {
+    "checkr": "./packages/cli/src/index.js"
+  },
+  "workspaces": ["packages/*", "types"],
   "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "typescript": "^5.8.3",
     "vitest": "3.2.4"
   },
   "scripts": {
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
     "test": "vitest run --config packages/helpers/vitest.config.js",
-    "test:helpers": "vitest run --config packages/helpers/vitest.config.js"
+    "test:helpers": "vitest run --config packages/helpers/vitest.config.js",
+    "test:utils": "vitest run --config packages/utils/vitest.config.js",
+    "test:core": "vitest run --config packages/core/vitest.config.js",
+    "test:cli": "vitest run --config packages/cli/vitest.config.js",
+    "test:types": "cd types && bun test",
+    "test:all": "bun run test:helpers && bun run test:utils && bun run test:core && bun run test:cli && bun run test:types",
+    "typecheck": "tsc -p types/tsconfig.json",
+    "typecheck:types": "tsc -p types/tsconfig.json",
+    "smoke": "cd examples/minimal && bunx checkr run",
+    "verify": "bun run lint && bun run typecheck && bun run test:all && bun run smoke"
   }
 }

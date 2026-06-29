@@ -15,11 +15,7 @@ export function resolveConfig(fileConfig = {}, cliPatch = {}, options = {}) {
     cwd: options.cwd ?? ENGINE_DEFAULTS.cwd,
   };
 
-  const merged = mergeConfig(
-    base,
-    pickDefined(fileConfig),
-    pickDefined(cliPatch),
-  );
+  const merged = mergeConfig(base, pickDefined(fileConfig), pickDefined(cliPatch));
 
   return validateConfig(merged);
 }

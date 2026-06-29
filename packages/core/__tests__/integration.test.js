@@ -1,13 +1,13 @@
-import { describe, it, expect } from "vitest";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { resolveConfig } from "../src/config/resolve-config.js";
+import { describe, expect, it } from "vitest";
 import { ENGINE_DEFAULTS } from "../src/config/defaults.js";
+import { resolveConfig } from "../src/config/resolve-config.js";
 import { run } from "../src/engine.js";
-import { scanFiles } from "../src/scanner.js";
-import { resolveStepOrder } from "../src/loader.js";
-import { matchGlob } from "../src/glob-match.js";
 import { createGitignoreFilter } from "../src/git/gitignore-filter.js";
+import { matchGlob } from "../src/glob-match.js";
+import { resolveStepOrder } from "../src/loader.js";
+import { scanFiles } from "../src/scanner.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURE = path.join(__dirname, "../__fixtures__/minimal");
@@ -58,7 +58,7 @@ describe("step overrides", () => {
     );
 
     const stepConfig = {
-      id: "todo_violation",
+      id: "check_todo_violation",
       include: ["src/with-todo.js"],
       extensions: [".js"],
     };
@@ -71,22 +71,22 @@ describe("step overrides", () => {
 describe("skip / only", () => {
   it("respects --only over discovery order", () => {
     const checks = [
-      { id: "always_pass", filename: "check_always_pass.js", fn: () => [] },
-      { id: "todo_violation", filename: "check_todo_violation.js", fn: () => [] },
+      { id: "check_always_pass", filename: "check_always_pass.js", fn: () => [] },
+      { id: "check_todo_violation", filename: "check_todo_violation.js", fn: () => [] },
     ];
 
-    const ordered = resolveStepOrder(checks, { only: ["todo_violation"] });
-    expect(ordered.map((c) => c.id)).toEqual(["todo_violation"]);
+    const ordered = resolveStepOrder(checks, { only: ["check_todo_violation"] });
+    expect(ordered.map((c) => c.id)).toEqual(["check_todo_violation"]);
   });
 
   it("respects skip list", () => {
     const checks = [
-      { id: "always_pass", filename: "check_always_pass.js", fn: () => [] },
-      { id: "todo_violation", filename: "check_todo_violation.js", fn: () => [] },
+      { id: "check_always_pass", filename: "check_always_pass.js", fn: () => [] },
+      { id: "check_todo_violation", filename: "check_todo_violation.js", fn: () => [] },
     ];
 
-    const ordered = resolveStepOrder(checks, { skip: ["todo_violation"] });
-    expect(ordered.map((c) => c.id)).toEqual(["always_pass"]);
+    const ordered = resolveStepOrder(checks, { skip: ["check_todo_violation"] });
+    expect(ordered.map((c) => c.id)).toEqual(["check_always_pass"]);
   });
 });
 
@@ -113,7 +113,7 @@ describe("run() integration", () => {
     const result = await run({
       cwd: FIXTURE,
       checksDir: "./.checkr/checks",
-      only: ["todo_violation"],
+      only: ["check_todo_violation"],
       include: ["**/*.js"],
       gitignore: ".gitignore",
       scanPath: ".",
@@ -138,8 +138,8 @@ describe("run() integration", () => {
       bail: true,
       loadFileConfig: false,
       steps: [
-        { id: "todo_violation", step: 1 },
-        { id: "always_pass", step: 2 },
+        { id: "check_todo_violation", step: 1 },
+        { id: "check_always_pass", step: 2 },
       ],
     });
 

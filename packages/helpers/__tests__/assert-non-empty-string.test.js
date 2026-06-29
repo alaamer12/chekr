@@ -7,9 +7,7 @@ describe("assertNonEmptyString", () => {
   });
 
   it("throws for invalid values", () => {
-    expect(() => assertNonEmptyString("", "field")).toThrow(
-      "field must be a non-empty string",
-    );
+    expect(() => assertNonEmptyString("", "field")).toThrow("field must be a non-empty string");
     expect(() => assertNonEmptyString("  ", "field")).toThrow();
     expect(() => assertNonEmptyString(1, "field")).toThrow();
   });

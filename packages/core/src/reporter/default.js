@@ -1,11 +1,4 @@
-import {
-  pass,
-  fail,
-  bold,
-  dim,
-  file as fileColor,
-  lineNum,
-} from "@checkr/utils";
+import { bold, dim, fail, file as fileColor, lineNum, pass } from "@checkr/utils";
 
 /**
  * @param {number} step
@@ -48,7 +41,7 @@ export function printViolations(violations) {
       console.log(`       ${dim(v.text)}`);
     }
     if (v.fix) {
-      console.log(`       ${dim("Fix: " + v.fix)}`);
+      console.log(`       ${dim(`Fix: ${v.fix}`)}`);
     }
     console.log();
   }
@@ -63,16 +56,11 @@ export function printSummary(stepResults) {
 
   const failedCount = stepResults.filter((s) => s.status === "fail").length;
   const passedCount = stepResults.filter((s) => s.status === "pass").length;
-  const totalViolations = stepResults.reduce(
-    (sum, s) => sum + s.violations.length,
-    0,
-  );
+  const totalViolations = stepResults.reduce((sum, s) => sum + s.violations.length, 0);
 
   const failText = fail(`${failedCount} steps failed`);
   const passText = pass(`${passedCount} steps passed`);
-  console.log(
-    `  ${failText}  |  ${passText}  |  ${totalViolations} total violations`,
-  );
+  console.log(`  ${failText}  |  ${passText}  |  ${totalViolations} total violations`);
   console.log("─".repeat(70));
   console.log();
 

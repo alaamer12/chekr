@@ -1,5 +1,5 @@
-import { pathToFileURL } from "node:url";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { toAbsolute } from "@checkr/helpers";
 
 /**
@@ -9,8 +9,7 @@ import { toAbsolute } from "@checkr/helpers";
  * @returns {Promise<Record<string, unknown>>}
  */
 export async function loadConfig(configPath, cwd = process.cwd()) {
-  const resolved =
-    configPath ?? path.join(cwd, "checkr.config.js");
+  const resolved = configPath ?? path.join(cwd, "checkr.config.js");
   const absolute = toAbsolute(resolved, cwd);
   const mod = await import(pathToFileURL(absolute).href);
   const config = mod.default ?? mod;

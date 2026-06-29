@@ -1,10 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { matchGlob, matchesAny, deriveExtensions } from "../src/glob-match.js";
-import {
-  contentHash,
-  sanitizeBranchName,
-  partitionFilesByCache,
-} from "../src/git/diff-cache.js";
+import { describe, expect, it } from "vitest";
+import { contentHash, partitionFilesByCache, sanitizeBranchName } from "../src/git/diff-cache.js";
+import { deriveExtensions, matchesAny } from "../src/glob-match.js";
 
 describe("diff-cache", () => {
   it("hashes content consistently", () => {
@@ -19,11 +15,7 @@ describe("diff-cache", () => {
   it("partitions files by cache state", () => {
     const modified = new Set(["a.js"]);
     const cached = { "a.js": "hash1", "b.js": "hash2" };
-    const { toCheck, skipped } = partitionFilesByCache(
-      ["a.js", "b.js", "c.js"],
-      cached,
-      modified,
-    );
+    const { toCheck, skipped } = partitionFilesByCache(["a.js", "b.js", "c.js"], cached, modified);
 
     expect(toCheck).toEqual(["a.js", "c.js"]);
     expect(skipped).toEqual(["b.js"]);

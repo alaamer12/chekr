@@ -1,4 +1,4 @@
+export { bold, dim, fail, file, info, lineNum, pass, warn } from "./colors.js";
 export { walkFiles } from "./file-walker.js";
 export { buildIgnoredLines } from "./ignore-handler.js";
-export { normalisePath, isMainEntryPoint, isInfrastructurePath } from "./path-utils.js";
-export { pass, fail, warn, info, bold, dim, file, lineNum } from "./colors.js";
+export { isInfrastructurePath, isMainEntryPoint, normalisePath } from "./path-utils.js";

@@ -11,6 +11,30 @@ export class ConfigError extends Error {
 }
 
 const REPORTER_TYPES = ["default", "json", "compact"];
+const SCAN_MODES = ["full", "changed", "staged"];
+
+/** @type {RegExp} */
+const CHECK_ID_PATTERN = /^check_[a-z][a-z0-9_]*$/;
+
+/**
+ * @param {unknown} value
+ * @param {string} path
+ */
+function assertPathLike(value, path) {
+  if (typeof value !== "string" || value.trim() === "") {
+    throw new ConfigError(`${path} must be a non-empty path string`, path);
+  }
+}
+
+/**
+ * @param {unknown} value
+ * @param {string} path
+ */
+function assertCheckId(value, path) {
+  if (typeof value !== "string" || !CHECK_ID_PATTERN.test(value)) {
+    throw new ConfigError(`${path} must match check_<snake_case> (e.g. check_raw_colors)`, path);
+  }
+}
 
 /**
  * @param {unknown} value
@@ -57,6 +81,8 @@ function validateStepConfig(step, path) {
     throw new ConfigError("Step id must be a non-empty string", `${path}.id`);
   }
 
+  assertCheckId(record.id, `${path}.id`);
+
   if (record.step !== undefined) {
     const stepNumber = record.step;
     if (!Number.isInteger(stepNumber) || /** @type {number} */ (stepNumber) <= 0) {
@@ -90,13 +116,9 @@ function validateStepConfig(step, path) {
 
   if (
     record.ignoreMarker !== undefined &&
-    (typeof record.ignoreMarker !== "string" ||
-      record.ignoreMarker.trim() === "")
+    (typeof record.ignoreMarker !== "string" || record.ignoreMarker.trim() === "")
   ) {
-    throw new ConfigError(
-      "ignoreMarker must be a non-empty string",
-      `${path}.ignoreMarker`,
-    );
+    throw new ConfigError("ignoreMarker must be a non-empty string", `${path}.ignoreMarker`);
   }
 
   if (record.bail !== undefined) {
@@ -105,22 +127,14 @@ function validateStepConfig(step, path) {
 
   if (record.concurrency !== undefined) {
     const concurrency = record.concurrency;
-    if (
-      !Number.isInteger(concurrency) ||
-      /** @type {number} */ (concurrency) <= 0
-    ) {
-      throw new ConfigError(
-        "concurrency must be a positive integer",
-        `${path}.concurrency`,
-      );
+    if (!Number.isInteger(concurrency) || /** @type {number} */ (concurrency) <= 0) {
+      throw new ConfigError("concurrency must be a positive integer", `${path}.concurrency`);
     }
   }
 
   if (
     record.options !== undefined &&
-    (typeof record.options !== "object" ||
-      record.options === null ||
-      Array.isArray(record.options))
+    (typeof record.options !== "object" || record.options === null || Array.isArray(record.options))
   ) {
     throw new ConfigError("options must be an object", `${path}.options`);
   }
@@ -139,23 +153,14 @@ export function validateConfig(config) {
   const record = /** @type {Record<string, unknown>} */ (config);
 
   for (const field of ["checksDir", "fixesDir", "scanPath", "cacheDir"]) {
-    if (
-      record[field] !== undefined &&
-      (typeof record[field] !== "string" || record[field].trim() === "")
-    ) {
-      throw new ConfigError(`${field} must be a non-empty string`, field);
+    if (record[field] !== undefined) {
+      assertPathLike(record[field], field);
     }
   }
 
   if (record.ignoreMarker !== undefined) {
-    if (
-      typeof record.ignoreMarker !== "string" ||
-      record.ignoreMarker.trim() === ""
-    ) {
-      throw new ConfigError(
-        "ignoreMarker must be a non-empty string",
-        "ignoreMarker",
-      );
+    if (typeof record.ignoreMarker !== "string" || record.ignoreMarker.trim() === "") {
+      throw new ConfigError("ignoreMarker must be a non-empty string", "ignoreMarker");
     }
   }
 
@@ -183,23 +188,20 @@ export function validateConfig(config) {
 
   if (record.concurrency !== undefined) {
     const concurrency = record.concurrency;
-    if (
-      !Number.isInteger(concurrency) ||
-      /** @type {number} */ (concurrency) <= 0
-    ) {
-      throw new ConfigError(
-        "concurrency must be a positive integer",
-        "concurrency",
-      );
+    if (!Number.isInteger(concurrency) || /** @type {number} */ (concurrency) <= 0) {
+      throw new ConfigError("concurrency must be a positive integer", "concurrency");
     }
   }
 
   if (record.reporter !== undefined) {
     if (!REPORTER_TYPES.includes(/** @type {string} */ (record.reporter))) {
-      throw new ConfigError(
-        `reporter must be one of: ${REPORTER_TYPES.join(", ")}`,
-        "reporter",
-      );
+      throw new ConfigError(`reporter must be one of: ${REPORTER_TYPES.join(", ")}`, "reporter");
+    }
+  }
+
+  if (record.scanMode !== undefined) {
+    if (!SCAN_MODES.includes(/** @type {string} */ (record.scanMode))) {
+      throw new ConfigError(`scanMode must be one of: ${SCAN_MODES.join(", ")}`, "scanMode");
     }
   }
 

@@ -20,28 +20,17 @@ export function resolveStepConfig(global, step, cliStepPatch = {}) {
     step: stepPart.step,
     description: stepPart.description,
     enabled: stepPart.enabled !== undefined ? stepPart.enabled : true,
-    include:
-      stepPart.include !== undefined ? stepPart.include : globalInclude,
+    include: stepPart.include !== undefined ? stepPart.include : globalInclude,
     exclude:
       globalExclude.length > 0 || stepExclude.length > 0
         ? [...globalExclude, ...stepExclude]
         : undefined,
-    gitignore:
-      stepPart.gitignore !== undefined
-        ? stepPart.gitignore
-        : global.gitignore,
+    gitignore: stepPart.gitignore !== undefined ? stepPart.gitignore : global.gitignore,
     extensions: stepPart.extensions,
     scope: stepPart.scope,
-    ignoreMarker:
-      stepPart.ignoreMarker !== undefined
-        ? stepPart.ignoreMarker
-        : global.ignoreMarker,
-    bail:
-      stepPart.bail !== undefined ? stepPart.bail : global.bail,
-    concurrency:
-      stepPart.concurrency !== undefined
-        ? stepPart.concurrency
-        : global.concurrency,
+    ignoreMarker: stepPart.ignoreMarker !== undefined ? stepPart.ignoreMarker : global.ignoreMarker,
+    bail: stepPart.bail !== undefined ? stepPart.bail : global.bail,
+    concurrency: stepPart.concurrency !== undefined ? stepPart.concurrency : global.concurrency,
     options: stepPart.options,
   });
 

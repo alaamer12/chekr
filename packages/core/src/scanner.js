@@ -1,15 +1,8 @@
 import path from "node:path";
+import { isInsideDir, normalizePosixPath, toAbsolute } from "@checkr/helpers";
 import { walkFiles } from "@checkr/utils";
-import { isInsideDir, toAbsolute, normalizePosixPath } from "@checkr/helpers";
-import {
-  createGitignoreFilter,
-  applyGitignoreFilter,
-} from "./git/gitignore-filter.js";
-import {
-  getChangedPaths,
-  getStagedPaths,
-  isRepo,
-} from "./git/git-service.js";
+import { getChangedPaths, getStagedPaths, isRepo } from "./git/git-service.js";
+import { applyGitignoreFilter, createGitignoreFilter } from "./git/gitignore-filter.js";
 import { deriveExtensions, matchesAny } from "./glob-match.js";
 
 /**
@@ -20,12 +13,8 @@ import { deriveExtensions, matchesAny } from "./glob-match.js";
  */
 export async function scanFiles(stepConfig, globalConfig) {
   const cwd = /** @type {string} */ (globalConfig.cwd ?? process.cwd());
-  const scanPath = /** @type {string} */ (
-    stepConfig.scanPath ?? globalConfig.scanPath ?? "."
-  );
-  const scanMode = /** @type {string} */ (
-    globalConfig.scanMode ?? "full"
-  );
+  const scanPath = /** @type {string} */ (stepConfig.scanPath ?? globalConfig.scanPath ?? ".");
+  const scanMode = /** @type {string} */ (globalConfig.scanMode ?? "full");
 
   const include = /** @type {string[] | undefined} */ (stepConfig.include);
   const exclude = /** @type {string[] | undefined} */ (stepConfig.exclude);
@@ -68,10 +57,7 @@ export async function scanFiles(stepConfig, globalConfig) {
 
   const gitignorePath = stepConfig.gitignore ?? globalConfig.gitignore;
   if (gitignorePath) {
-    const isIgnored = createGitignoreFilter(
-      /** @type {string} */ (gitignorePath),
-      cwd,
-    );
+    const isIgnored = createGitignoreFilter(/** @type {string} */ (gitignorePath), cwd);
     candidates = applyGitignoreFilter(candidates, isIgnored);
   }
 
@@ -79,9 +65,7 @@ export async function scanFiles(stepConfig, globalConfig) {
     const inRepo = await isRepo(cwd);
     if (inRepo) {
       const gitPaths =
-        scanMode === "staged"
-          ? await getStagedPaths(cwd)
-          : await getChangedPaths(cwd);
+        scanMode === "staged" ? await getStagedPaths(cwd) : await getChangedPaths(cwd);
       const gitSet = new Set(gitPaths);
       candidates = candidates.filter((p) => gitSet.has(p));
     }

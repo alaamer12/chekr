@@ -1,4 +1,4 @@
-import { pass, fail } from "@checkr/utils";
+import { fail, pass } from "@checkr/utils";
 
 /**
  * @param {object} result
@@ -6,8 +6,7 @@ import { pass, fail } from "@checkr/utils";
 export function reportCompact(result) {
   for (const step of result.steps) {
     const icon = step.status === "fail" ? fail("F") : pass("P");
-    const count =
-      step.violations.length > 0 ? ` (${step.violations.length})` : "";
+    const count = step.violations.length > 0 ? ` (${step.violations.length})` : "";
     console.log(`${icon} ${step.step}. ${step.name}${count}`);
   }
 

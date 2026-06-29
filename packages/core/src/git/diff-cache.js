@@ -4,8 +4,8 @@
  */
 
 import { createHash } from "node:crypto";
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 /**
@@ -151,7 +151,9 @@ export function needsRepoLevelCheck(
   modifiedPaths,
   currentHashes = new Map(),
 ) {
-  return partitionFilesByCache(scopedFiles, cachedFiles, modifiedPaths, currentHashes).toCheck.length > 0;
+  return (
+    partitionFilesByCache(scopedFiles, cachedFiles, modifiedPaths, currentHashes).toCheck.length > 0
+  );
 }
 
 /**
@@ -242,4 +244,31 @@ export async function getBranchCacheMeta(cacheRoot, gitContext) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Human-readable summary of whether incremental cache applies on this run.
+ *
+ * @param {{ branch: string, head: string }} gitContext
+ * @param {object | null} branchMeta
+ * @param {number} modifiedPathCount
+ * @returns {string}
+ */
+export function formatIncrementalCacheBanner(gitContext, branchMeta, modifiedPathCount) {
+  const branch = gitContext.branch;
+  const current = shortHead(gitContext.head);
+
+  if (!branchMeta?.head) {
+    return `Incremental cache: commit ${current} on ${branch} — no saved results for this branch yet (full scan, then cache is written).`;
+  }
+
+  const previous = shortHead(branchMeta.head);
+  const extra =
+    branchMeta.head !== gitContext.head ? ` (based on previous cache for ${previous})` : "";
+
+  if (modifiedPathCount === 0) {
+    return `Incremental cache: commit ${current} on ${branch}${extra} — reusing saved results (clean working tree).`;
+  }
+
+  return `Incremental cache: commit ${current} on ${branch}${extra} — reusing saved results; rechecking ${modifiedPathCount} changed/dirty path(s).`;
 }

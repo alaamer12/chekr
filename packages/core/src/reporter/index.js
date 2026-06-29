@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
-import { reportDefault } from "./default.js";
-import { reportJson, formatJson } from "./json.js";
 import { reportCompact } from "./compact.js";
+import { reportDefault } from "./default.js";
+import { formatJson, reportJson } from "./json.js";
 
 const REPORTERS = {
   default: reportDefault,
@@ -31,8 +31,7 @@ export function report(result, config) {
 
   const reportFile = config.reportFile;
   if (reportFile && typeof reportFile === "string") {
-    const content =
-      reportFile.endsWith(".json") ? formatJson(result) : formatTextReport(result);
+    const content = reportFile.endsWith(".json") ? formatJson(result) : formatTextReport(result);
     writeFileSync(reportFile, content, "utf8");
   }
 }
@@ -58,4 +57,4 @@ function formatTextReport(result) {
   return lines.join("\n");
 }
 
-export { reportDefault, reportJson, reportCompact };
+export { reportCompact, reportDefault, reportJson };

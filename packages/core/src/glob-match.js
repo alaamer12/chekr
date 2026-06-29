@@ -13,9 +13,7 @@ function expandBraces(pattern) {
   if (!match) return [pattern];
 
   const alternatives = match[1].split(",").map((s) => s.trim());
-  return alternatives.flatMap((alt) =>
-    expandBraces(pattern.replace(match[0], alt)),
-  );
+  return alternatives.flatMap((alt) => expandBraces(pattern.replace(match[0], alt)));
 }
 
 /**

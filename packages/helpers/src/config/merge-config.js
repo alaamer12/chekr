@@ -9,7 +9,7 @@ const ARRAY_REPLACE_KEYS = new Set(["include", "exclude"]);
  * @returns {Record<string, unknown>}
  */
 export function mergeConfig(base, ...overrides) {
-  let result = { ...base };
+  const result = { ...base };
 
   for (const override of overrides) {
     if (!override) {

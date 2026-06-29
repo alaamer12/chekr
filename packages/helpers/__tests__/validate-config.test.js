@@ -33,6 +33,36 @@ describe("validateConfig", () => {
     }
   });
 
+  it("rejects step id without check_ prefix", () => {
+    try {
+      validateConfig({ steps: [{ id: "raw_colors" }] });
+      expect.fail("expected ConfigError");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigError);
+      expect(error.path).toBe("steps[0].id");
+    }
+  });
+
+  it("rejects invalid check id format", () => {
+    try {
+      validateConfig({ steps: [{ id: "check_RawColors" }] });
+      expect.fail("expected ConfigError");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigError);
+      expect(error.path).toBe("steps[0].id");
+    }
+  });
+
+  it("rejects invalid scanMode", () => {
+    try {
+      validateConfig({ scanMode: "partial" });
+      expect.fail("expected ConfigError");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ConfigError);
+      expect(error.path).toBe("scanMode");
+    }
+  });
+
   it("rejects non-object config", () => {
     expect(() => validateConfig(null)).toThrow(ConfigError);
   });

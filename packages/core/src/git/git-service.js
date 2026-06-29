@@ -1,5 +1,6 @@
-import simpleGit from "simple-git";
 import { normalizePosixPath } from "@checkr/helpers";
+import simpleGit from "simple-git";
+import { buildStatusFingerprint } from "./diff-cache.js";
 
 /**
  * @param {string} [cwd]
@@ -96,7 +97,19 @@ function normalizeLine(line) {
 
 /**
  * @param {string} [cwd]
- * @returns {Promise<{ branch: string, head: string, status: string } | null>}
+ * @returns {Promise<boolean>}
+ */
+export async function isGitAvailable(cwd = process.cwd()) {
+  return isRepo(cwd);
+}
+
+/**
+ * @typedef {{ branch: string, head: string, status: string, statusFingerprint: string, forceFullScan?: boolean }} GitContext
+ */
+
+/**
+ * @param {string} [cwd]
+ * @returns {Promise<GitContext | null>}
  */
 export async function getGitContext(cwd = process.cwd()) {
   if (!(await isRepo(cwd))) {
@@ -110,5 +123,10 @@ export async function getGitContext(cwd = process.cwd()) {
     git.raw(["status", "--porcelain"]),
   ]);
 
-  return { branch, head, status };
+  return {
+    branch,
+    head,
+    status,
+    statusFingerprint: buildStatusFingerprint({ head, status }),
+  };
 }

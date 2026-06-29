@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
+import { normalizePosixPath, toAbsolute } from "@checkr/helpers";
 import ignore from "ignore";
-import { toAbsolute, normalizePosixPath } from "@checkr/helpers";
 
 /**
  * Create a gitignore filter from a file path.

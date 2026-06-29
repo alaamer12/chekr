@@ -17,106 +17,106 @@
  * assertions use path.relative() to normalise expectations.
  */
 
-import { describe, test, expect } from "vitest";
-import { walkFiles } from "../src/file-walker.js";
-import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { describe, expect, test } from "vitest";
+import { walkFiles } from "../src/file-walker.js";
 
 const PACKAGE_DIR = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const REPO_ROOT = path.resolve(PACKAGE_DIR, "../..");
-const TOOLKIT_DIR = path.join(REPO_ROOT, "toolkit");
-const UTILS_DIR = path.join(TOOLKIT_DIR, "utils");
-const CHECKS_DIR = path.join(TOOLKIT_DIR, "checks");
+const UTILS_SRC_DIR = path.join(PACKAGE_DIR, "src");
+const CHECKS_DIR = path.join(REPO_ROOT, "packages/core/__fixtures__/minimal/.checkr/checks");
+const FIXTURE_ROOT = path.join(REPO_ROOT, "packages/core/__fixtures__/minimal");
 
 function cwdRelative(absPath) {
-	return path.relative(process.cwd(), absPath).replace(/\\/g, "/");
+  return path.relative(process.cwd(), absPath).replace(/\\/g, "/");
 }
 
 describe("walkFiles — path format", () => {
-	test("returns paths with forward slashes only (no backslashes)", () => {
-		const files = walkFiles(UTILS_DIR, [".js"]);
-		for (const file of files) {
-			expect(file).not.toContain("\\");
-		}
-	});
+  test("returns paths with forward slashes only (no backslashes)", () => {
+    const files = walkFiles(UTILS_SRC_DIR, [".js"]);
+    for (const file of files) {
+      expect(file).not.toContain("\\");
+    }
+  });
 
-	test("returns paths relative to CWD, not relative to rootDir", () => {
-		const files = walkFiles(UTILS_DIR, [".js"]);
-		expect(files.length).toBeGreaterThan(0);
-		const expectedPrefix = cwdRelative(UTILS_DIR) + "/";
-		for (const file of files) {
-			expect(file.startsWith(expectedPrefix)).toBe(true);
-		}
-	});
+  test("returns paths relative to CWD, not relative to rootDir", () => {
+    const files = walkFiles(UTILS_SRC_DIR, [".js"]);
+    expect(files.length).toBeGreaterThan(0);
+    const expectedPrefix = `${cwdRelative(UTILS_SRC_DIR)}/`;
+    for (const file of files) {
+      expect(file.startsWith(expectedPrefix)).toBe(true);
+    }
+  });
 
-	test("paths include the full directory prefix from CWD", () => {
-		const files = walkFiles(UTILS_DIR, [".js"]);
-		const fileWalker = files.find(f => f.endsWith("file-walker.js"));
-		const expected = cwdRelative(path.join(UTILS_DIR, "file-walker.js"));
-		expect(fileWalker).toBe(expected);
-	});
+  test("paths include the full directory prefix from CWD", () => {
+    const files = walkFiles(UTILS_SRC_DIR, [".js"]);
+    const fileWalker = files.find((f) => f.endsWith("file-walker.js"));
+    const expected = cwdRelative(path.join(UTILS_SRC_DIR, "file-walker.js"));
+    expect(fileWalker).toBe(expected);
+  });
 
-	test("REGRESSION: blockiyas path is detectable via forward-slash includes()", () => {
-		const files = walkFiles(CHECKS_DIR, [".js"]);
-		for (const file of files) {
-			expect(file).not.toContain("\\");
-		}
-		const expectedPrefix = cwdRelative(CHECKS_DIR) + "/";
-		expect(files.every(f => f.startsWith(expectedPrefix))).toBe(true);
-	});
+  test("REGRESSION: checks paths use forward slashes for glob matching", () => {
+    const files = walkFiles(CHECKS_DIR, [".js"]);
+    for (const file of files) {
+      expect(file).not.toContain("\\");
+    }
+    const expectedPrefix = `${cwdRelative(CHECKS_DIR)}/`;
+    expect(files.every((f) => f.startsWith(expectedPrefix))).toBe(true);
+  });
 
-	test("REGRESSION: glob pattern **/checks/** matches returned paths", () => {
-		const files = walkFiles(CHECKS_DIR, [".js"]);
+  test("REGRESSION: glob pattern **/checks/** matches returned paths", () => {
+    const files = walkFiles(CHECKS_DIR, [".js"]);
 
-		const checksPrefix = cwdRelative(CHECKS_DIR);
-		const pattern = checksPrefix + "/**";
-		const regexPattern = pattern
-			.replace(/[.+?^${}()|[\]\\]/g, "\\$&")
-			.replace(/\*\*/g, "___DOUBLESTAR___")
-			.replace(/\*/g, "[^/]*")
-			.replace(/___DOUBLESTAR___/g, ".*");
-		const regex = new RegExp(`^${regexPattern}$`);
+    const checksPrefix = cwdRelative(CHECKS_DIR);
+    const pattern = `${checksPrefix}/**`;
+    const regexPattern = pattern
+      .replace(/[.+?^${}()|[\]\\]/g, "\\$&")
+      .replace(/\*\*/g, "___DOUBLESTAR___")
+      .replace(/\*/g, "[^/]*")
+      .replace(/___DOUBLESTAR___/g, ".*");
+    const regex = new RegExp(`^${regexPattern}$`);
 
-		const matched = files.filter(f => regex.test(f));
-		expect(matched.length).toBeGreaterThan(0);
-		expect(matched.some(f => f.includes("check-code-duplication"))).toBe(true);
-	});
+    const matched = files.filter((f) => regex.test(f));
+    expect(matched.length).toBeGreaterThan(0);
+    expect(matched.some((f) => f.includes("check_always_pass"))).toBe(true);
+  });
 
-	test("only returns files matching the given extensions", () => {
-		const files = walkFiles(UTILS_DIR, [".js"]);
-		for (const file of files) {
-			expect(file).toMatch(/\.js$/);
-		}
-	});
+  test("only returns files matching the given extensions", () => {
+    const files = walkFiles(UTILS_SRC_DIR, [".js"]);
+    for (const file of files) {
+      expect(file).toMatch(/\.js$/);
+    }
+  });
 
-	test("returns empty array when no files match extensions", () => {
-		const files = walkFiles(UTILS_DIR, [".xyz_nonexistent"]);
-		expect(files).toHaveLength(0);
-	});
+  test("returns empty array when no files match extensions", () => {
+    const files = walkFiles(UTILS_SRC_DIR, [".xyz_nonexistent"]);
+    expect(files).toHaveLength(0);
+  });
 
-	test("returns both .js and .ts files when both requested", () => {
-		const files = walkFiles(UTILS_DIR, [".js", ".ts"]);
-		expect(files.length).toBeGreaterThan(0);
-		expect(files.every(f => f.endsWith(".js") || f.endsWith(".ts"))).toBe(true);
-	});
+  test("returns both .js and .ts files when both requested", () => {
+    const files = walkFiles(path.join(REPO_ROOT, "types"), [".js", ".ts"]);
+    expect(files.length).toBeGreaterThan(0);
+    expect(files.every((f) => f.endsWith(".js") || f.endsWith(".ts"))).toBe(true);
+  });
 
-	test("returns sorted paths for deterministic output", () => {
-		const files = walkFiles(UTILS_DIR, [".js"]);
-		const sorted = [...files].sort();
-		expect(files).toEqual(sorted);
-	});
+  test("returns sorted paths for deterministic output", () => {
+    const files = walkFiles(UTILS_SRC_DIR, [".js"]);
+    const sorted = [...files].sort();
+    expect(files).toEqual(sorted);
+  });
 
-	test("skips node_modules", () => {
-		const files = walkFiles(TOOLKIT_DIR, [".js"]);
-		expect(files.every(f => !f.includes("/node_modules/"))).toBe(true);
-	});
+  test("skips node_modules", () => {
+    const files = walkFiles(REPO_ROOT, [".js"]);
+    expect(files.every((f) => !f.includes("/node_modules/"))).toBe(true);
+  });
 
-	test("skips caller-provided exclude paths", () => {
-		const handlerSubdir = path.join(CHECKS_DIR, "check-react-handlers");
-		const files = walkFiles(CHECKS_DIR, [".js"], {
-			excludePaths: new Set([cwdRelative(handlerSubdir)]),
-		});
-		expect(files.every(f => !f.includes("check-react-handlers/"))).toBe(true);
-		expect(files.some(f => f.includes("check-code-duplication"))).toBe(true);
-	});
+  test("skips caller-provided exclude paths", () => {
+    const srcDir = path.join(FIXTURE_ROOT, "src");
+    const files = walkFiles(FIXTURE_ROOT, [".js"], {
+      excludePaths: new Set([cwdRelative(srcDir)]),
+    });
+    expect(files.every((f) => !f.includes("/src/"))).toBe(true);
+    expect(files.some((f) => f.includes("check_always_pass"))).toBe(true);
+  });
 });

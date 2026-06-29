@@ -10,19 +10,13 @@ describe("mergeConfig", () => {
 
   it("replaces include/exclude arrays instead of concatenating", () => {
     expect(
-      mergeConfig(
-        { include: ["a"], exclude: ["x"] },
-        { include: ["b"], exclude: ["y"] },
-      ),
+      mergeConfig({ include: ["a"], exclude: ["x"] }, { include: ["b"], exclude: ["y"] }),
     ).toEqual({ include: ["b"], exclude: ["y"] });
   });
 
   it("deep merges nested objects", () => {
     expect(
-      mergeConfig(
-        { options: { a: 1, nested: { x: 1 } } },
-        { options: { b: 2, nested: { y: 2 } } },
-      ),
+      mergeConfig({ options: { a: 1, nested: { x: 1 } } }, { options: { b: 2, nested: { y: 2 } } }),
     ).toEqual({ options: { a: 1, b: 2, nested: { x: 1, y: 2 } } });
   });
 

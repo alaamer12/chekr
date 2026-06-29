@@ -1,4 +1,4 @@
-import { validateConfig as validateHelpersConfig, ConfigError } from "@checkr/helpers";
+import { ConfigError, validateConfig as validateHelpersConfig } from "@checkr/helpers";
 
 export { ConfigError };
 

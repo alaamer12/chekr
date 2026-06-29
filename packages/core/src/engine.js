@@ -1,8 +1,8 @@
-import { resolveConfig } from "./config/resolve-config.js";
 import { loadConfig } from "./config/load-config.js";
+import { resolveConfig } from "./config/resolve-config.js";
 import { loadChecks, resolveStepOrder } from "./loader.js";
-import { runSteps } from "./runner.js";
 import { report } from "./reporter/index.js";
+import { runSteps } from "./runner.js";
 
 /**
  * Run the checkr engine.
@@ -14,10 +14,7 @@ export async function run(inputConfig = {}) {
   let fileConfig = {};
 
   if (inputConfig.configPath) {
-    fileConfig = await loadConfig(
-      /** @type {string} */ (inputConfig.configPath),
-      cwd,
-    );
+    fileConfig = await loadConfig(/** @type {string} */ (inputConfig.configPath), cwd);
   } else if (inputConfig.loadFileConfig !== false) {
     try {
       fileConfig = await loadConfig(undefined, cwd);
@@ -29,8 +26,7 @@ export async function run(inputConfig = {}) {
   const { configPath, loadFileConfig, ...cliPatch } = inputConfig;
   const globalConfig = resolveConfig(fileConfig, cliPatch, { cwd });
 
-  const checksDir =
-    /** @type {string} */ (globalConfig.checksDir) ?? "./.checkr/checks";
+  const checksDir = /** @type {string} */ (globalConfig.checksDir) ?? "./.checkr/checks";
   const checks = await loadChecks(checksDir, cwd);
   const ordered = resolveStepOrder(checks, globalConfig);
 
@@ -61,7 +57,7 @@ export async function run(inputConfig = {}) {
   return result;
 }
 
-export { resolveConfig } from "./config/resolve-config.js";
-export { loadConfig } from "./config/load-config.js";
-export { validateConfig, ConfigError } from "./config/validate-config.js";
 export { ENGINE_DEFAULTS } from "./config/defaults.js";
+export { loadConfig } from "./config/load-config.js";
+export { resolveConfig } from "./config/resolve-config.js";
+export { ConfigError, validateConfig } from "./config/validate-config.js";
