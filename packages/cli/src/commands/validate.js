@@ -84,7 +84,11 @@ async function validateDir(dir, prefix, deriveExport) {
     }
 
     const fnExports = Object.keys(mod).filter(
-      (k) => k.startsWith(fnPrefix) && typeof mod[k] === "function",
+      (k) =>
+        k.startsWith(fnPrefix) &&
+        typeof mod[k] === "function" &&
+        !k.endsWith("Repo") &&
+        !k.endsWith("File"),
     );
 
     if (fnExports.length > 1 && prefix === "check_") {

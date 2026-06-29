@@ -20,6 +20,8 @@
         "@chekr/core": "0.1.0",
         "@chekr/helpers": "0.1.0",
         "@chekr/utils": "0.1.0",
+        "ignore": "^7.0.3",
+        "simple-git": "^3.27.0",
       },
     },
     "packages/core": {
