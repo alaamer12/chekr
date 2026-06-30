@@ -10,6 +10,7 @@ const BOOLEAN_FLAGS = new Set([
   "version",
   "pass",
   "force",
+  "keep-on",
 ]);
 
 /** Flags that use --no-* form only. */

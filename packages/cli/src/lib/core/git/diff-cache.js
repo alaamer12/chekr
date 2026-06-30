@@ -4,7 +4,7 @@
  */
 
 import { createHash } from "node:crypto";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
 import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
@@ -68,13 +68,8 @@ export function stepCachePath(cacheRoot, gitContext, stepName) {
 export function isStepCacheValid(stepCache, gitContext) {
   if (gitContext.forceFullScan) return false;
   if (!stepCache?.meta?.head) return false;
-
-  const currentBranch = sanitizeBranchName(gitContext.branch);
-  const cachedBranch = stepCache.meta.branch;
-  if (cachedBranch !== undefined && cachedBranch !== currentBranch) {
-    return false;
-  }
-
+  // Branch mismatch is no longer grounds for rejection — cache is keyed by
+  // commit hash, not branch name. Cross-branch reuse is handled upstream.
   return true;
 }
 
@@ -229,6 +224,47 @@ export function shortHead(head) {
 }
 
 /**
+ * Search ALL branch subdirectories under cacheRoot for a cache entry whose
+ * meta.head matches the given commit hash. Returns the meta object from the
+ * first match found, or null if none exists.
+ *
+ * This enables cross-branch cache reuse when two branches share the same HEAD
+ * commit (e.g. a freshly-checked-out branch at the same commit as another).
+ *
+ * @param {string} cacheRoot
+ * @param {string} commitHash
+ * @returns {Promise<object | null>}
+ */
+export async function findCacheMetaByCommit(cacheRoot, commitHash) {
+  let branchDirs;
+  try {
+    branchDirs = readdirSync(cacheRoot, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name);
+  } catch {
+    return null;
+  }
+
+  for (const branchName of branchDirs) {
+    const stepsDir = join(cacheRoot, branchName, "steps");
+    let entries;
+    try {
+      entries = await readdir(stepsDir);
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      if (!entry.endsWith(".json")) continue;
+      const stepCache = await loadStepCache(join(stepsDir, entry));
+      if (stepCache?.meta?.head === commitHash) {
+        return { ...stepCache.meta, _fromBranch: branchName };
+      }
+    }
+  }
+  return null;
+}
+
+/**
  * @param {string} cacheRoot
  * @param {{ branch: string }} gitContext
  * @returns {Promise<object | null>}
@@ -262,9 +298,14 @@ export function formatIncrementalCacheBanner(gitContext, branchMeta, modifiedPat
     return `Incremental cache: commit ${current} on ${branch} — no saved results for this branch yet (full scan, then cache is written).`;
   }
 
+  const fromBranch = branchMeta._fromBranch
+    ? ` [cache from branch '${branchMeta._fromBranch}'`
+    : "";
   const previous = shortHead(branchMeta.head);
-  const extra =
-    branchMeta.head !== gitContext.head ? ` (based on previous cache for ${previous})` : "";
+  const sameCommit = branchMeta.head === gitContext.head;
+  const extra = sameCommit
+    ? fromBranch ? `${fromBranch}]` : ""
+    : ` (based on previous cache for ${previous})${fromBranch ? `, ${fromBranch}]` : ""}`;
 
   if (modifiedPathCount === 0) {
     return `Incremental cache: commit ${current} on ${branch}${extra} — reusing saved results (clean working tree).`;

@@ -4,6 +4,7 @@ import { dim, fail, warn } from "../utils/index.js";
 import { isMeshResult } from "../utils/mesh-optimizer.js";
 import {
   contentHash,
+  findCacheMetaByCommit,
   formatIncrementalCacheBanner,
   getBranchCacheMeta,
   getChangedPathsSince,
@@ -14,6 +15,7 @@ import {
   partitionFilesByCache,
   saveStepCache,
   saveStepCacheSync,
+  shortHead,
   stepCachePath,
 } from "./git/diff-cache.js";
 import { diffPaths, getGitContext, isGitAvailable } from "./git/git-service.js";
@@ -423,8 +425,19 @@ export async function runSteps({ checks, globalConfig }) {
         _activeCacheDir = cacheDir;
         _activeGitContext = gitContext;
 
+        // ── 1. Try current-branch cache first ──────────────────────────────
         let branchMeta = await getBranchCacheMeta(cacheDir, gitContext);
 
+        // ── 2. Same commit on a different branch → reuse cross-branch cache ─
+        if (!branchMeta || branchMeta.head !== gitContext.head) {
+          const crossBranchMeta = await findCacheMetaByCommit(cacheDir, gitContext.head);
+          if (crossBranchMeta) {
+            // Exact same commit: no diff needed, everything is up to date
+            branchMeta = crossBranchMeta;
+          }
+        }
+
+        // ── 3. Different commit → compute diff and optionally warn ──────────
         if (branchMeta?.head && branchMeta.head !== gitContext.head) {
           const diffSet = await getChangedPathsSince(branchMeta.head, gitContext.head, (from, to) =>
             diffPaths(from, to, cwd),
@@ -432,6 +445,25 @@ export async function runSteps({ checks, globalConfig }) {
           if (diffSet) {
             for (const p of diffSet) {
               modifiedPaths.add(p);
+            }
+
+            // Large-diff countdown warning
+            const largeDiffThreshold = /** @type {number} */ (globalConfig.largeDiffThreshold ?? 20);
+            const keepOn = globalConfig.keepOn === true || process.argv.includes("--keep-on");
+            if (!keepOn && diffSet.size > largeDiffThreshold) {
+              process.stderr.write(
+                warn(
+                  `\n⚠️  Large diff detected: ${diffSet.size} files changed since cached commit ${shortHead(branchMeta.head)}.\n` +
+                  `   Cache will be invalidated in 5 seconds. Run with --keep-on to skip this warning.\n`
+                )
+              );
+              for (let i = 5; i > 0; i--) {
+                process.stderr.write(warn(`   Invalidating in ${i}...\r`));
+                await new Promise((r) => setTimeout(r, 1000));
+              }
+              process.stderr.write("\n");
+              branchMeta = null;
+              gitContext.forceFullScan = true;
             }
           } else {
             if (verbose) {

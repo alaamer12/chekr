@@ -101,5 +101,14 @@ export function cliToConfigPatch(flags, positionals) {
     patch.scanPath = positionals[0];
   }
 
+  if (flags["keep-on"] === true) {
+    patch.keepOn = true;
+  }
+
+  if (typeof flags["large-diff-threshold"] === "string") {
+    const n = parseInt(flags["large-diff-threshold"], 10);
+    if (!isNaN(n) && n > 0) patch.largeDiffThreshold = n;
+  }
+
   return { patch, actions };
 }

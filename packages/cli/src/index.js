@@ -55,6 +55,9 @@ Options:
   --steps <ids>           Override step order
   --disable <id>          Disable a step
   --enable <id>           Enable a step
+  --keep-on               Skip the large-diff countdown and keep cache as-is
+  --large-diff-threshold  File count above which a cross-commit diff triggers a
+                          warning countdown (default: 20)
   -h, --help              Show help
   -v, --version           Show version
 `);
