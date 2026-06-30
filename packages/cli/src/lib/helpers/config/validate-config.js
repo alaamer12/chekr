@@ -204,6 +204,34 @@ export function validateConfig(config) {
       throw new ConfigError(`scanMode must be one of: ${SCAN_MODES.join(", ")}`, "scanMode");
     }
   }
+  
+  if (record.marketplace !== undefined) {
+    if (typeof record.marketplace !== "object" || record.marketplace === null || Array.isArray(record.marketplace)) {
+      throw new ConfigError("marketplace must be an object", "marketplace");
+    }
+    const mp = /** @type {Record<string, unknown>} */ (record.marketplace);
+    if (mp.repository !== undefined) {
+      if (typeof mp.repository !== "string" || mp.repository.trim() === "") {
+        throw new ConfigError("marketplace.repository must be a non-empty string", "marketplace.repository");
+      }
+    }
+    if (mp.branch !== undefined) {
+      if (typeof mp.branch !== "string" || mp.branch.trim() === "") {
+        throw new ConfigError("marketplace.branch must be a non-empty string", "marketplace.branch");
+      }
+    }
+    if (mp.publish !== undefined) {
+      if (typeof mp.publish !== "object" || mp.publish === null || Array.isArray(mp.publish)) {
+        throw new ConfigError("marketplace.publish must be an object", "marketplace.publish");
+      }
+      // Shallow validation here, full validation happens in publish command
+      for (const [id, meta] of Object.entries(mp.publish)) {
+        if (!id.startsWith("check_")) {
+          throw new ConfigError(`marketplace.publish key "${id}" must start with "check_"`, `marketplace.publish.${id}`);
+        }
+      }
+    }
+  }
 
   if (record.steps !== undefined) {
     if (!Array.isArray(record.steps)) {

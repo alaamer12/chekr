@@ -132,6 +132,17 @@ declare module "chekr" {
   export interface ChekrConfig {
     checksDir?: PathLike;
     fixesDir?: PathLike;
+    marketplace?: {
+      /** GitHub repository in "owner/repo" format. */
+      repository?: string;
+      /** Target branch for publishing/installing (default: "main"). */
+      branch?: string;
+      /** 
+       * Metadata for publishing checks to the marketplace.
+       * Keyed by CheckId.
+       */
+      publish?: Record<string, Omit<import("./marketplace").MarketplaceCheckEntry, "id">>;
+    };
     include?: GlobPattern[];
     exclude?: GlobPattern[];
     gitignore?: GitignorePath;
@@ -195,6 +206,11 @@ declare module "chekr" {
         | "cacheDir"
       >
     > {
+    marketplace: {
+      repository: string;
+      branch: string;
+      publish?: Record<string, Omit<import("./marketplace").MarketplaceCheckEntry, "id">>;
+    };
     reportFile: PathLike | null;
     scanMode: ScanMode;
     steps?: StepConfig[];

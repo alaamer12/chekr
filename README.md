@@ -117,6 +117,8 @@ export function myCheck(source, filePath, context) {
 | `chekr list` | List discovered rules |
 | `chekr validate` | Validate rule file contracts |
 | `chekr init` | Create `.chekr/` scaffold |
+| `chekr publish` | Publish rule to Marketplace |
+| `chekr install` | Install rule from Marketplace |
 | `chekr fix` | Auto-fixers *(planned)* |
 
 Common flags: `--changed`, `--staged`, `--no-bail`, `--skip`, `--only`, `--gitignore`, `--reporter json`.
@@ -155,6 +157,7 @@ console.log(result.passed, result.violations.length);
 | [Configuration](docs/CONFIG.md) | `chekr.config.js`, per-step overrides, gitignore |
 | [CLI](docs/CLI.md) | Commands and flags |
 | [Rule authoring](docs/RULE_AUTHORING.md) | Writing checks and fixes |
+| [Marketplace](docs/MARKETPLACE.md) | Publishing and installing rules |
 | [Publishing](docs/PUBLISHING.md) | First npm publish |
 | [Contributing](docs/CONTRIBUTING.md) | Development setup |
 

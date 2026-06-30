@@ -15,6 +15,10 @@ export const ENGINE_DEFAULTS = {
   verbose: false,
   cache: true,
   cacheDir: ".chekr-cache",
+  marketplace: {
+    repository: "owner/chekr-marketplace",
+    branch: "main",
+  },
   steps: undefined,
   skip: [],
   only: [],
