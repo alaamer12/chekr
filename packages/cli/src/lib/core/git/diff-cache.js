@@ -50,12 +50,25 @@ export async function getChangedPathsSince(baseHead, currentHead, diffPaths) {
 }
 
 /**
+ * Primary cache path (keyed by commit hash).
+ * @param {string} cacheRoot
+ * @param {{ head: string }} gitContext
+ * @param {string} stepName
+ * @returns {string}
+ */
+export function stepCachePath(cacheRoot, gitContext, stepName) {
+  const commitDir = join(cacheRoot, gitContext.head, "steps");
+  return join(commitDir, `${stepName}.json`);
+}
+
+/**
+ * Legacy cache path (keyed by branch name) for backward compatibility.
  * @param {string} cacheRoot
  * @param {{ branch: string }} gitContext
  * @param {string} stepName
  * @returns {string}
  */
-export function stepCachePath(cacheRoot, gitContext, stepName) {
+export function legacyStepCachePath(cacheRoot, gitContext, stepName) {
   const branchDir = join(cacheRoot, sanitizeBranchName(gitContext.branch), "steps");
   return join(branchDir, `${stepName}.json`);
 }
@@ -265,11 +278,144 @@ export async function findCacheMetaByCommit(cacheRoot, commitHash) {
 }
 
 /**
+ * Search ALL directories under cacheRoot for the most recently saved cache entry.
+ * This provides a fallback base for diffing when checking out a new branch or
+ * moving to a commit that has no cache yet.
+ *
  * @param {string} cacheRoot
- * @param {{ branch: string }} gitContext
+ * @returns {Promise<object | null>}
+ */
+export async function findMostRecentCacheMeta(cacheRoot) {
+  let cacheDirs;
+  try {
+    cacheDirs = readdirSync(cacheRoot, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name);
+  } catch {
+    return null;
+  }
+
+  let mostRecent = null;
+  for (const dirName of cacheDirs) {
+    const stepsDir = join(cacheRoot, dirName, "steps");
+    let entries;
+    try {
+      entries = await readdir(stepsDir);
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      if (!entry.endsWith(".json")) continue;
+      const stepCache = await loadStepCache(join(stepsDir, entry));
+      if (stepCache?.meta?.savedAt) {
+        if (!mostRecent || new Date(stepCache.meta.savedAt) > new Date(mostRecent.savedAt)) {
+          mostRecent = { ...stepCache.meta, _fromDir: dirName };
+        }
+      }
+    }
+  }
+  return mostRecent;
+}
+
+/**
+ * Find a step-level cache entry across ALL branch directories that matches
+ * both `checkId` and `commitHash`. Used as a cross-branch step cache fallback.
+ *
+ * @param {string} cacheRoot
+ * @param {string} checkId
+ * @param {string} commitHash
+ * @returns {Promise<object | null>}
+ */
+export async function findStepCacheByCommit(cacheRoot, checkId, commitHash) {
+  let branchDirs;
+  try {
+    branchDirs = readdirSync(cacheRoot, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name);
+  } catch {
+    return null;
+  }
+
+  let bestCache = null;
+  let maxFiles = -1;
+
+  for (const branchName of branchDirs) {
+    const filePath = join(cacheRoot, branchName, "steps", `${checkId}.json`);
+    const stepCache = await loadStepCache(filePath);
+    if (stepCache?.meta?.head === commitHash) {
+      const fileCount = stepCache.files ? Object.keys(stepCache.files).length : 0;
+      if (fileCount > maxFiles) {
+        maxFiles = fileCount;
+        bestCache = stepCache;
+      }
+    }
+  }
+  return bestCache;
+}
+
+/**
+ * Find the most recently saved step-level cache entry across ALL directories.
+ * Used as a fallback base for diffing.
+ *
+ * @param {string} cacheRoot
+ * @param {string} checkId
+ * @returns {Promise<object | null>}
+ */
+export async function findMostRecentStepCache(cacheRoot, checkId) {
+  let cacheDirs;
+  try {
+    cacheDirs = readdirSync(cacheRoot, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name);
+  } catch {
+    return null;
+  }
+
+  let bestCache = null;
+  let maxFiles = -1;
+
+  for (const dirName of cacheDirs) {
+    const filePath = join(cacheRoot, dirName, "steps", `${checkId}.json`);
+    const stepCache = await loadStepCache(filePath);
+    if (stepCache?.meta?.savedAt) {
+      const fileCount = stepCache.files ? Object.keys(stepCache.files).length : 0;
+      // Prefer the cache with more files. If equal, prefer the more recent one.
+      if (
+        fileCount > maxFiles ||
+        (fileCount === maxFiles &&
+          (!bestCache || new Date(stepCache.meta.savedAt) > new Date(bestCache.meta.savedAt)))
+      ) {
+        maxFiles = fileCount;
+        bestCache = stepCache;
+      }
+    }
+  }
+  return bestCache;
+}
+
+/**
+ * Gets the cache metadata for the current context. First checks the commit-hash
+ * directory, then falls back to the legacy branch-name directory.
+ *
+ * @param {string} cacheRoot
+ * @param {{ head: string, branch: string }} gitContext
  * @returns {Promise<object | null>}
  */
 export async function getBranchCacheMeta(cacheRoot, gitContext) {
+  // Try commit hash dir first
+  const commitDir = join(cacheRoot, gitContext.head, "steps");
+  try {
+    const entries = await readdir(commitDir);
+    const jsonFile = entries.find((entry) => entry.endsWith(".json"));
+    if (jsonFile) {
+      const stepCache = await loadStepCache(join(commitDir, jsonFile));
+      if (stepCache?.meta) return stepCache.meta;
+    }
+  } catch {
+    // Ignore and fallback
+  }
+
+  // Fallback to legacy branch dir
   const branchDir = join(cacheRoot, sanitizeBranchName(gitContext.branch), "steps");
   try {
     const entries = await readdir(branchDir);

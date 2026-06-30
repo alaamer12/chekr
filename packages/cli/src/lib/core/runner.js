@@ -5,10 +5,14 @@ import { isMeshResult } from "../utils/mesh-optimizer.js";
 import {
   contentHash,
   findCacheMetaByCommit,
+  findMostRecentCacheMeta,
+  findMostRecentStepCache,
+  findStepCacheByCommit,
   formatIncrementalCacheBanner,
   getBranchCacheMeta,
   getChangedPathsSince,
   isStepCacheValid,
+  legacyStepCachePath,
   loadStepCache,
   needsRepoLevelCheck,
   parseModifiedPathsFromStatus,
@@ -150,7 +154,15 @@ export async function runStep({
       cwd,
     );
     const cachePath = stepCachePath(cacheDir, gitContext, check.id);
-    const stepCache = await loadStepCache(cachePath);
+
+    // 1. Find the best cache for the exact commit across ALL folders
+    let stepCache = await findStepCacheByCommit(cacheDir, check.id, gitContext.head);
+
+    if (!stepCache?.meta?.head) {
+      // 2. Fallback to the most recent cache available anywhere (for diffing)
+      stepCache = await findMostRecentStepCache(cacheDir, check.id);
+    }
+
     stepCacheHit = isStepCacheValid(stepCache, gitContext);
 
     if (stepCacheHit) {
@@ -428,7 +440,7 @@ export async function runSteps({ checks, globalConfig }) {
         // ── 1. Try current-branch cache first ──────────────────────────────
         let branchMeta = await getBranchCacheMeta(cacheDir, gitContext);
 
-        // ── 2. Same commit on a different branch → reuse cross-branch cache ─
+        // ── 2. Same commit across branches → reuse cache ─────────────────────
         if (!branchMeta || branchMeta.head !== gitContext.head) {
           const crossBranchMeta = await findCacheMetaByCommit(cacheDir, gitContext.head);
           if (crossBranchMeta) {
@@ -437,7 +449,12 @@ export async function runSteps({ checks, globalConfig }) {
           }
         }
 
-        // ── 3. Different commit → compute diff and optionally warn ──────────
+        // ── 3. No exact match anywhere → fallback to most recent cache for diffing ─
+        if (!branchMeta) {
+          branchMeta = await findMostRecentCacheMeta(cacheDir);
+        }
+
+        // ── 4. Different commit → compute diff and optionally warn ──────────
         if (branchMeta?.head && branchMeta.head !== gitContext.head) {
           const diffSet = await getChangedPathsSince(branchMeta.head, gitContext.head, (from, to) =>
             diffPaths(from, to, cwd),
@@ -489,18 +506,21 @@ export async function runSteps({ checks, globalConfig }) {
     if (_cacheEnabled && _activeGitContext && _activeStepId) {
       // Write to stderr — it's unbuffered and flushes immediately even after
       // the parent shell (bun) has already restored the terminal prompt.
-      process.stderr.write(warn(`\nInterrupted! Saving partial cache for ${_activeStepId}...\n`));
       try {
         const filesForCache = buildFilesForCache(
           _activeScopedFiles,
           _activeCheckedFiles,
           _activeCachedFiles,
         );
-        const cachePath = stepCachePath(_activeCacheDir, _activeGitContext, _activeStepId);
-        // Save only file hashes — NOT violations. The violations array for repo-level
-        // checks can be enormous (tens of thousands of entries) and serializing it
-        // synchronously inside a signal handler blocks the thread for seconds.
-        saveStepCacheSync(cachePath, _activeGitContext, filesForCache, []);
+        if (Object.keys(filesForCache).length > 0) {
+          process.stderr.write(warn(`\nInterrupted! Saving partial cache for ${_activeStepId}...\n`));
+          const cachePath = stepCachePath(_activeCacheDir, _activeGitContext, _activeStepId);
+          // Save only file hashes — NOT violations. The violations array for repo-level
+          // checks can be enormous (tens of thousands of entries) and serializing it
+          // synchronously inside a signal handler blocks the thread for seconds.
+          saveStepCacheSync(cachePath, _activeGitContext, filesForCache, []);
+        }
+
       } catch {
         // ignore errors during interrupt cache save
       }
