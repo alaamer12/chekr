@@ -504,26 +504,7 @@ export async function runSteps({ checks, globalConfig }) {
     _cancelled = true;
     clearProgress();
     if (_cacheEnabled && _activeGitContext && _activeStepId) {
-      // Write to stderr — it's unbuffered and flushes immediately even after
-      // the parent shell (bun) has already restored the terminal prompt.
-      try {
-        const filesForCache = buildFilesForCache(
-          _activeScopedFiles,
-          _activeCheckedFiles,
-          _activeCachedFiles,
-        );
-        if (Object.keys(filesForCache).length > 0) {
-          process.stderr.write(warn(`\nInterrupted! Saving partial cache for ${_activeStepId}...\n`));
-          const cachePath = stepCachePath(_activeCacheDir, _activeGitContext, _activeStepId);
-          // Save only file hashes — NOT violations. The violations array for repo-level
-          // checks can be enormous (tens of thousands of entries) and serializing it
-          // synchronously inside a signal handler blocks the thread for seconds.
-          saveStepCacheSync(cachePath, _activeGitContext, filesForCache, []);
-        }
-
-      } catch {
-        // ignore errors during interrupt cache save
-      }
+      process.stderr.write(warn(`\nInterrupted ${_activeStepId}! Run aborted.\n`));
     }
     process.exit(1);
   };
