@@ -1,6 +1,6 @@
 {
   "name": "@chekr/cli",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Command-line interface for chekr — run project rules from the terminal",
   "license": "MIT",
   "type": "module",
