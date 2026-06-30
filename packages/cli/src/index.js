@@ -11,6 +11,7 @@ import { runCommand } from "./commands/run.js";
 import { validateCommand } from "./commands/validate.js";
 import { publishCommand } from "./commands/publish.js";
 import { installCommand } from "./commands/install.js";
+import { pruneCommand } from "./commands/prune.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(path.join(__dirname, "..", "package.json"), "utf8"));
@@ -31,6 +32,8 @@ Commands:
   install    Install a check from the marketplace
              Usage: chekr install <check-id> [--force]
   fix        Run fixers (not yet implemented)
+  prune      Delete the cache entirely or for a specific step
+             Usage: chekr prune <step-number | check-id | "all">
 
 Options:
   --config <file>         Config file path
@@ -102,6 +105,9 @@ async function main() {
         break;
       case "install":
         await installCommand(flags, positionals, cwd);
+        break;
+      case "prune":
+        await pruneCommand(flags, positionals, cwd);
         break;
       default:
         console.error(`Unknown command: ${command}`);

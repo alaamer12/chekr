@@ -1,4 +1,4 @@
-const COMMANDS = new Set(["run", "fix", "list", "validate", "init", "install", "publish"]);
+const COMMANDS = new Set(["run", "fix", "list", "validate", "init", "install", "publish", "prune"]);
 
 /** Flags that take no value (--verbose, --help, etc.). */
 const BOOLEAN_FLAGS = new Set([
