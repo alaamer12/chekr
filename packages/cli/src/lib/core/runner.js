@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import { chunk, resolveStepConfig, toAbsolute } from "../helpers/index.js";
 import { dim, fail, warn } from "../utils/index.js";
 import { isMeshResult } from "../utils/mesh-optimizer.js";
@@ -12,17 +13,17 @@ import {
   getBranchCacheMeta,
   getChangedPathsSince,
   isStepCacheValid,
-  legacyStepCachePath,
-  loadStepCache,
   needsRepoLevelCheck,
   parseModifiedPathsFromStatus,
   partitionFilesByCache,
   saveStepCache,
-  saveStepCacheSync,
   shortHead,
   stepCachePath,
 } from "./git/diff-cache.js";
 import { diffPaths, getGitContext, isGitAvailable } from "./git/git-service.js";
+import { createGraphEngine } from "./graph/engine.js";
+import { checkBigRepo, resolveCGCConfig } from "./graph/index.js";
+import { createQueryContext } from "./graph/query.js";
 import { clearProgress, renderProgress, setProgressContext } from "./progress.js";
 import { printStepResult, printViolations } from "./reporter/default.js";
 import { scanFiles } from "./scanner.js";
@@ -141,7 +142,7 @@ export async function runStep({
   let cachedFileHashes = {};
   let cachedViolations = [];
   let stepCacheHit = false;
-  let currentHashes = new Map();
+  const currentHashes = new Map();
 
   _activeStepId = check.id;
   _activeScopedFiles = files;
@@ -154,7 +155,7 @@ export async function runStep({
       /** @type {string} */ (globalConfig.cacheDir ?? ".chekr-cache"),
       cwd,
     );
-    const cachePath = stepCachePath(cacheDir, gitContext, check.id);
+    const _cachePath = stepCachePath(cacheDir, gitContext, check.id);
 
     // 1. Find the best cache for the exact commit across ALL folders
     let stepCache = await findStepCacheByCommit(cacheDir, check.id, gitContext.head);
@@ -178,7 +179,7 @@ export async function runStep({
       const modifiedInScope = files.filter(
         (f) => modifiedPaths.has(f) && cachedFileHashes[f] !== undefined,
       );
-      
+
       await Promise.all(
         modifiedInScope.map(async (filePath) => {
           try {
@@ -190,7 +191,12 @@ export async function runStep({
         }),
       );
 
-      const partition = partitionFilesByCache(files, cachedFileHashes, modifiedPaths, currentHashes);
+      const partition = partitionFilesByCache(
+        files,
+        cachedFileHashes,
+        modifiedPaths,
+        currentHashes,
+      );
       toCheck = partition.toCheck;
       skipped = partition.skipped;
 
@@ -221,7 +227,9 @@ export async function runStep({
 
   if (typeof repoFn === "function" || typeof checkProject === "function") {
     runRepo =
-      !useCache || !gitContext || needsRepoLevelCheck(files, cachedFileHashes, modifiedPaths, currentHashes);
+      !useCache ||
+      !gitContext ||
+      needsRepoLevelCheck(files, cachedFileHashes, modifiedPaths, currentHashes);
 
     if (runRepo) {
       const context = {
@@ -313,6 +321,7 @@ export async function runStep({
     options: resolved.options ?? {},
     cwd,
     stepConfig: resolved,
+    graph: globalConfig._graphQueryContext || null,
     report: (v) => {
       violations.push(...normalizeViolations(v, { checkId: check.id, step: stepNum }));
     },
@@ -509,14 +518,16 @@ export async function runSteps({ checks, globalConfig }) {
             }
 
             // Large-diff countdown warning
-            const largeDiffThreshold = /** @type {number} */ (globalConfig.largeDiffThreshold ?? 20);
+            const largeDiffThreshold = /** @type {number} */ (
+              globalConfig.largeDiffThreshold ?? 20
+            );
             const keepOn = globalConfig.keepOn === true || process.argv.includes("--keep-on");
             if (!keepOn && diffSet.size > largeDiffThreshold) {
               process.stderr.write(
                 warn(
                   `\n⚠️  Large diff detected: ${diffSet.size} files changed since cached commit ${shortHead(branchMeta.head)}.\n` +
-                  `   Cache will be invalidated in 5 seconds. Run with --keep-on to skip this warning.\n`
-                )
+                    `   Cache will be invalidated in 5 seconds. Run with --keep-on to skip this warning.\n`,
+                ),
               );
               for (let i = 5; i > 0; i--) {
                 process.stderr.write(warn(`   Invalidating in ${i}...\r`));
@@ -544,6 +555,50 @@ export async function runSteps({ checks, globalConfig }) {
     }
   }
 
+  // ── Code Graph Context (experimental) ─────────────────────────────────────
+  const experimentalConfig = globalConfig.experimental;
+  const cgcUserConfig =
+    experimentalConfig && typeof experimentalConfig === "object"
+      ? experimentalConfig.codeGraph
+      : undefined;
+  const cgcConfig = resolveCGCConfig(cgcUserConfig);
+
+  /** @type {import('./graph/engine.js').GraphEngine | null} */
+  let graphEngine = null;
+
+  if (cgcConfig.enabled && cgcConfig.autoIndex) {
+    // Auto-index: update graph before running checks
+    try {
+      const graphDir = resolve(cwd, cgcConfig.persistDir);
+      graphEngine = await createGraphEngine(graphDir);
+      if (graphEngine.isAvailable()) {
+        globalConfig._graphQueryContext = createQueryContext(graphEngine);
+        if (verbose) {
+          console.log(dim("Code graph: active (auto-index enabled)."));
+        }
+      }
+    } catch {
+      // Graph unavailable — continue without it
+    }
+  } else if (cgcConfig.enabled) {
+    // Graph enabled but auto-index off: try to open existing graph read-only
+    try {
+      const graphDir = resolve(cwd, cgcConfig.persistDir);
+      graphEngine = await createGraphEngine(graphDir, { readOnly: true });
+      if (graphEngine.isAvailable() && graphEngine.getManifest()?.fileCount > 0) {
+        globalConfig._graphQueryContext = createQueryContext(graphEngine);
+        if (verbose) {
+          console.log(dim("Code graph: active (using existing index)."));
+        }
+      }
+    } catch {
+      // Continue without graph
+    }
+  } else if (cgcConfig.suggestIndexing && !quiet) {
+    // Not enabled — check if we should suggest it
+    // (deferred until after files are scanned in first step)
+  }
+
   const sigintHandler = () => {
     _cancelled = true;
     clearProgress();
@@ -557,6 +612,7 @@ export async function runSteps({ checks, globalConfig }) {
 
   const results = [];
   let stepNumber = 1;
+  let bigRepoSuggestionShown = false;
 
   try {
     for (const check of checks) {
@@ -573,6 +629,15 @@ export async function runSteps({ checks, globalConfig }) {
 
       printStepResult(result.step, result.name, result.violations, result.cacheInfo);
       results.push(result);
+
+      // Big-repo suggestion (once, after first step so we have file counts)
+      if (!bigRepoSuggestionShown && !cgcConfig.enabled && result.cacheInfo?.filesInScope) {
+        const { isBig, message } = checkBigRepo(result.cacheInfo.filesInScope, cgcConfig);
+        if (isBig && message) {
+          console.log(`\n${dim(message)}\n`);
+          bigRepoSuggestionShown = true;
+        }
+      }
 
       const bail = resolved.bail ?? globalConfig.bail;
       if (result.status === "fail" && bail !== false) {
@@ -598,6 +663,12 @@ export async function runSteps({ checks, globalConfig }) {
     _activeCachedFiles = {};
     _activeCheckedFiles = [];
     _activeViolations = [];
+
+    // Close graph engine if opened
+    if (graphEngine) {
+      await graphEngine.close();
+      graphEngine = null;
+    }
   }
 
   return results;

@@ -12,6 +12,7 @@ import { validateCommand } from "./commands/validate.js";
 import { publishCommand } from "./commands/publish.js";
 import { installCommand } from "./commands/install.js";
 import { pruneCommand } from "./commands/prune.js";
+import { indexCommand } from "./commands/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(path.join(__dirname, "..", "package.json"), "utf8"));
@@ -34,6 +35,8 @@ Commands:
   fix        Run fixers (not yet implemented)
   prune      Delete the cache entirely or for a specific step
              Usage: chekr prune <step-number | check-id | "all">
+  index      Build/update code graph for faster checks (experimental)
+             Usage: chekr index [--full] [--status] [--reset]
 
 Options:
   --config <file>         Config file path
@@ -108,6 +111,9 @@ async function main() {
         break;
       case "prune":
         await pruneCommand(flags, positionals, cwd);
+        break;
+      case "index":
+        await indexCommand(flags, positionals, cwd);
         break;
       default:
         console.error(`Unknown command: ${command}`);
