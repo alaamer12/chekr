@@ -29,6 +29,8 @@ export function printStepResult(step, name, violations, cacheInfo = {}) {
     status = fail(`❌ FAIL  (${violations.length} violations)`) + cacheSuffix;
   } else if (cacheInfo.fullyCached) {
     status = pass(`⚡ CACHED (${cacheInfo.skipped ?? 0} files, same commit)`);
+  } else if (cacheInfo.filesInScope === 0) {
+    status = pass(`✅ PASS`) + dim(` (0 files in scope)`);
   } else if (cacheInfo.checked === 0 && (cacheInfo.skipped ?? 0) > 0) {
     status = pass(`✅ PASS (cache: ${cacheInfo.skipped} skipped)`);
   } else {

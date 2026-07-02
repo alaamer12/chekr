@@ -125,12 +125,24 @@ export function partitionFilesByCache(
   for (const file of filePaths) {
     const cachedHash = cachedFiles?.[file];
     if (!cachedHash) {
+      // Never seen before — must check
       toCheck.push(file);
       continue;
     }
 
     if (modifiedPaths.has(file)) {
-      toCheck.push(file);
+      // Git reports the file as modified/dirty.
+      // If we have a live content hash, use it to confirm whether the file
+      // actually changed since the last cache write. This avoids re-running
+      // the analysis on every run just because the working tree is dirty
+      // (e.g. uncommitted edits that haven't touched any checked file).
+      const liveHash = currentHashes.get(file);
+      if (liveHash !== undefined && liveHash === cachedHash) {
+        // Content identical to what we cached — treat as clean
+        skipped.push(file);
+      } else {
+        toCheck.push(file);
+      }
       continue;
     }
 

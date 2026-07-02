@@ -141,6 +141,7 @@ export async function runStep({
   let cachedFileHashes = {};
   let cachedViolations = [];
   let stepCacheHit = false;
+  let currentHashes = new Map();
 
   _activeStepId = check.id;
   _activeScopedFiles = files;
@@ -170,20 +171,46 @@ export async function runStep({
       cachedViolations = stepCache?.violations ?? [];
       _activeCachedFiles = cachedFileHashes;
 
-      const partition = partitionFilesByCache(files, cachedFileHashes, modifiedPaths);
+      // For files that git marks as modified but are already in our cache,
+      // compute their current content hash. partitionFilesByCache will use
+      // these to skip files whose content hasn't actually changed since the
+      // last cache write (e.g. dirty-but-unchanged uncommitted files).
+      const modifiedInScope = files.filter(
+        (f) => modifiedPaths.has(f) && cachedFileHashes[f] !== undefined,
+      );
+      
+      await Promise.all(
+        modifiedInScope.map(async (filePath) => {
+          try {
+            const source = await readFile(toAbsolute(filePath, cwd), "utf8");
+            currentHashes.set(filePath, contentHash(source));
+          } catch {
+            // unreadable — leave out of map so it falls back to toCheck
+          }
+        }),
+      );
+
+      const partition = partitionFilesByCache(files, cachedFileHashes, modifiedPaths, currentHashes);
       toCheck = partition.toCheck;
       skipped = partition.skipped;
 
-      const restoredViolations = cachedViolations
-        .map((v) => normalizeViolation(v, { checkId: check.id, step: stepNum }))
-        .filter((v) => v !== null);
-      const skippedSet = new Set(skipped);
-      violations.push(
-        ...restoredViolations.filter((v) => {
-          const vFiles = /** @type {string[]} */ (v._files ?? [/** @type {string} */ (v.file)]);
-          return vFiles.every((f) => skippedSet.has(f));
-        }),
-      );
+      // When optimize:true is set, the repoFn uses createMeshOptimizer() which
+      // internally calls restoreCachedViolations(). Pre-restoring here would
+      // cause those violations to be counted twice (runner + mesh), leading to
+      // exponential growth on each run (e.g. 336 → 656 → 1296...).
+      // For non-optimize steps (file-by-file checks), restoring here is correct.
+      if (!optimize) {
+        const restoredViolations = cachedViolations
+          .map((v) => normalizeViolation(v, { checkId: check.id, step: stepNum }))
+          .filter((v) => v !== null);
+        const skippedSet = new Set(skipped);
+        violations.push(
+          ...restoredViolations.filter((v) => {
+            const vFiles = /** @type {string[]} */ (v._files ?? [/** @type {string} */ (v.file)]);
+            return vFiles.every((f) => skippedSet.has(f));
+          }),
+        );
+      }
     }
   }
 
@@ -194,7 +221,7 @@ export async function runStep({
 
   if (typeof repoFn === "function" || typeof checkProject === "function") {
     runRepo =
-      !useCache || !gitContext || needsRepoLevelCheck(files, cachedFileHashes, modifiedPaths);
+      !useCache || !gitContext || needsRepoLevelCheck(files, cachedFileHashes, modifiedPaths, currentHashes);
 
     if (runRepo) {
       const context = {
@@ -392,6 +419,7 @@ export async function runStep({
     cacheInfo: {
       checked: toCheck.length,
       skipped: skipped.length,
+      filesInScope: files.length,
       fullyCached,
       optimize,
       meshSkippedPairs,

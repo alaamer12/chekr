@@ -9,6 +9,22 @@ import { toAbsolute } from "../lib/helpers/index.js";
  * @param {string} cwd
  */
 export async function runCommand(flags, positionals, cwd) {
+  // Guard: catch `chekr run <subcommand>` mistakes (e.g. `chekr run prune all`)
+  // This happens when the CLI is aliased to `chekr run` in package.json scripts
+  // and the user types e.g. `bun chekr prune all` → `chekr run prune all`.
+  const KNOWN_COMMANDS = new Set(["prune", "fix", "list", "validate", "init", "install", "publish"]);
+  if (positionals.length > 0 && KNOWN_COMMANDS.has(positionals[0])) {
+    const subcmd = positionals[0];
+    const rest = positionals.slice(1).join(" ");
+    console.error(
+      `\n❌ Wrong invocation: "chekr run ${positionals.join(" ")}"\n` +
+      `   "${subcmd}" is a chekr subcommand, not a step filter.\n` +
+      `   Did you mean: chekr ${subcmd}${rest ? " " + rest : ""}\n`
+    );
+    process.exitCode = 1;
+    return;
+  }
+
   const { patch, actions } = cliToConfigPatch(flags, positionals);
 
   if (actions.clearCache) {
