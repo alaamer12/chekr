@@ -1,6 +1,6 @@
 {
   "name": "@chekr/cli",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Command-line interface for chekr — run project rules from the terminal",
   "license": "MIT",
   "type": "module",
@@ -51,5 +51,8 @@
   "dependencies": {
     "ignore": "^7.0.3",
     "simple-git": "^3.27.0"
+  },
+  "optionalDependencies": {
+    "@ladybugdb/core": "^0.18.0"
   }
 }
