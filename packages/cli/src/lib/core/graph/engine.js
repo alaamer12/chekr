@@ -125,10 +125,27 @@ export async function createGraphEngine(graphDir, _options = {}) {
 
   try {
     db = new driver.Database(dbPath);
+    await db.init();
     conn = new driver.Connection(db);
+    await conn.init();
   } catch (err) {
     console.error(`[CGC] Failed to open graph database: ${err.message}`);
     return createUnavailableEngine();
+  }
+
+  /**
+   * Execute a Cypher query using the prepare+execute pattern.
+   * @param {string} cypher
+   * @param {Record<string, unknown>} [params]
+   * @returns {Promise<any[]>}
+   */
+  async function execQuery(cypher, params = {}) {
+    const ps = await conn.prepare(cypher);
+    const result = await conn.execute(ps, params);
+    if (result && typeof result.getAll === "function") {
+      return await result.getAll();
+    }
+    return [];
   }
 
   // Check schema version — rebuild if mismatched
@@ -137,7 +154,7 @@ export async function createGraphEngine(graphDir, _options = {}) {
     // Schema changed — drop and rebuild
     for (const ddl of DROP_ALL) {
       try {
-        await conn.query(ddl);
+        await execQuery(ddl);
       } catch {
         // Ignore drop errors for non-existent tables
       }
@@ -147,7 +164,7 @@ export async function createGraphEngine(graphDir, _options = {}) {
   // Ensure schema exists
   for (const ddl of ALL_DDL) {
     try {
-      await conn.query(ddl);
+      await execQuery(ddl);
     } catch (err) {
       // Table might already exist — only throw on real errors
       if (!err.message?.includes("already exists")) {
@@ -159,11 +176,7 @@ export async function createGraphEngine(graphDir, _options = {}) {
   return {
     async query(cypher, params = {}) {
       try {
-        const result = await conn.query(cypher, params);
-        if (result && typeof result.getAll === "function") {
-          return await result.getAll();
-        }
-        return [];
+        return await execQuery(cypher, params);
       } catch (err) {
         throw new Error(`[CGC] Query failed: ${err.message}\nQuery: ${cypher}`);
       }
@@ -171,23 +184,25 @@ export async function createGraphEngine(graphDir, _options = {}) {
 
     async close() {
       try {
-        if (conn) conn = null;
-        if (db) db = null;
+        if (conn && typeof conn.close === "function") conn.close();
+        if (db && typeof db.close === "function") db.close();
       } catch {
         // Best-effort cleanup
       }
+      conn = null;
+      db = null;
     },
 
     async resetSchema() {
       for (const ddl of DROP_ALL) {
         try {
-          await conn.query(ddl);
+          await execQuery(ddl);
         } catch {
           // Ignore
         }
       }
       for (const ddl of ALL_DDL) {
-        await conn.query(ddl);
+        await execQuery(ddl);
       }
       writeManifest(graphDir, {
         schemaVersion: SCHEMA_VERSION,
