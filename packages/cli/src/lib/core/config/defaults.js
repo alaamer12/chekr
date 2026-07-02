@@ -26,4 +26,16 @@ export const ENGINE_DEFAULTS = {
   disable: [],
   enable: [],
   cwd: process.cwd(),
+  experimental: {
+    codeGraph: {
+      enabled: false,
+      engine: "auto",
+      persistDir: ".chekr-graph",
+      indexOn: ["imports", "exports", "symbols"],
+      autoIndex: false,
+      maxDepth: 5,
+      suggestIndexing: true,
+      bigRepoThreshold: 500,
+    },
+  },
 };
