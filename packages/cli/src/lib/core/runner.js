@@ -397,6 +397,17 @@ export async function runStep({
     files.length > 0 &&
     skipped.length === files.length;
 
+  // When a step with optimize:true is fully cached, the repoFn is skipped entirely,
+  // meaning createMeshOptimizer().complete() is never called, so cachedViolations are
+  // never restored. We must restore them here directly.
+  if (fullyCached && optimize && violations.length === 0 && cachedViolations.length > 0) {
+    violations.push(
+      ...cachedViolations
+        .map((v) => normalizeViolation(v, { checkId: check.id, step: stepNum }))
+        .filter((v) => v !== null),
+    );
+  }
+
   if (useCache && gitContext) {
     const cacheDir = toAbsolute(
       /** @type {string} */ (globalConfig.cacheDir ?? ".chekr-cache"),
@@ -405,7 +416,12 @@ export async function runStep({
     const cachePath = stepCachePath(cacheDir, gitContext, check.id);
     const filesForCache = buildFilesForCache(files, _activeCheckedFiles, cachedFileHashes);
     _activeCachedFiles = filesForCache;
-    await saveStepCache(cachePath, gitContext, filesForCache, violations);
+    // Only write cache when we actually ran the check (not when fully cached).
+    // Re-saving on a fully-cached run would overwrite with stale data if violations
+    // were just replayed and not freshly computed.
+    if (!fullyCached) {
+      await saveStepCache(cachePath, gitContext, filesForCache, violations);
+    }
   }
 
   _activeViolations = violations;

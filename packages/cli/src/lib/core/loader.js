@@ -1,4 +1,4 @@
-import { readdir } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { deriveCheckExport, toAbsolute } from "../helpers/index.js";
@@ -40,6 +40,11 @@ export async function loadChecks(checksDir, cwd) {
   for (const filename of checkFiles) {
     const id = filename.replace(/\.js$/, "");
     const filePath = path.join(absoluteDir, filename);
+
+    const sourceCode = await readFile(filePath, "utf8");
+    if (!sourceCode.includes("buildIgnoredLines(")) {
+      console.warn(`\x1b[33m⚠️  Warning: ${filename} does not call buildIgnoredLines(). This script will ignore @chekr-ignore comments and may produce incorrect analysis.\x1b[0m`);
+    }
     const mod = await import(pathToFileURL(filePath).href);
     const exportName = deriveCheckExport(filename);
     const fn = mod[exportName];
