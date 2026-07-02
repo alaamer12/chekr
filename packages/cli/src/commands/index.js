@@ -16,6 +16,7 @@
 import { resolve } from "node:path";
 import { loadConfig, resolveConfig } from "../lib/core/engine.js";
 import { getGitContext } from "../lib/core/git/git-service.js";
+import { createGraphEngine } from "../lib/core/graph/engine.js";
 import { resetGraph, resolveCGCConfig, runIndex } from "../lib/core/graph/index.js";
 import { scanFiles } from "../lib/core/scanner.js";
 
@@ -224,7 +225,6 @@ export async function indexCommand(flags, _positionals, cwd) {
  * Print graph status information.
  */
 async function printStatus(graphDir, cgcConfig) {
-  const { createGraphEngine } = await import("../lib/core/graph/engine.js");
   const engine = await createGraphEngine(graphDir);
 
   if (!engine.isAvailable()) {

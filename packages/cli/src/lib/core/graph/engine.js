@@ -36,15 +36,37 @@ const MANIFEST_FILE = "manifest.json";
 
 /**
  * Try to import LadybugDB. Returns null if not available.
+ *
+ * Pre-checks for the native binary to avoid process.dlopen crashes
+ * when the platform-specific .node file is missing.
+ *
  * @returns {Promise<{ Database: any, Connection: any } | null>}
  */
 async function loadDriver() {
+  // Try LadybugDB
   try {
+    const { createRequire } = await import("node:module");
+    const require = createRequire(import.meta.url);
+    const corePath = require.resolve("@ladybugdb/core");
+    // Check if the native binary exists before importing
+    const coreDir = corePath.substring(0, corePath.lastIndexOf("/"));
+    const nativePath = join(coreDir, "lbugjs.node");
+    if (!existsSync(nativePath)) {
+      throw new Error("Native binary not found");
+    }
     const mod = await import("@ladybugdb/core");
     return mod;
   } catch {
     // Fallback: try kuzu (original) as alternative
     try {
+      const { createRequire } = await import("node:module");
+      const require = createRequire(import.meta.url);
+      const corePath = require.resolve("kuzu");
+      const coreDir = corePath.substring(0, corePath.lastIndexOf("/"));
+      const nativePath = join(coreDir, "kuzu_native.node");
+      if (!existsSync(nativePath)) {
+        throw new Error("Native binary not found");
+      }
       const mod = await import("kuzu");
       return mod;
     } catch {
